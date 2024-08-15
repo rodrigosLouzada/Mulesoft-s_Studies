@@ -11,8 +11,5 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<http:listener doc:name="Listener" doc:id="a0210a82-a2d3-42e0-9dfb-c09529da2cb6" config-ref="HTTP_Listener_config" path="hello-mule" allowedMethods="GET"/>
 		<logger level="INFO" doc:name="Logger" doc:id="10105964-51f9-41e2-a9aa-fff7c1205257" message="welcome to mule ESB"/>
 	</flow>
-	<flow name="hello-mule-apiFlow1" doc:id="b1471fa5-8a7a-46a7-b73b-e6c356fbe38a" >
-		<http:listener doc:name="Listener" doc:id="6c57e5c9-e025-48cd-99de-e3ce825d964f" config-ref="HTTP_Listener_config" path="hi-test"/>
-		<logger level="INFO" doc:name="Logger" doc:id="f77e7174-0a03-4423-804e-c84c0d169425" message="hey mule esb"/>
-	</flow>
+	
 </mule>
