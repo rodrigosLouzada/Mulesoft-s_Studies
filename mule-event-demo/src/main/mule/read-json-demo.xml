@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e0643d68-f74f-4999-9b04-bc3010396c1b" basePath="mule-message-structure-demo" >
-		<http:listener-connection host="0.0.0.0" port="8081" />
+
+
+	<http:listener-config name="HTTP_Listener_config"
+		doc:name="HTTP Listener config"
+		doc:id="a55612da-a4ab-476f-b36a-5d9a47774559"
+		basePath="mule-message-structure-demo">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
 	</http:listener-config>
 	<flow name="read-json-demoFlow" doc:id="465fc634-195f-4e49-b2f6-eebaefbef78d" >
-		<http:listener doc:name="Listener" doc:id="399563cb-3213-4980-bee8-89b8428e6935" config-ref="HTTP_Listener_config" path="read-json" allowedMethods="POST"/>
+		<http:listener doc:name="Listener" doc:id="399563cb-3213-4980-bee8-89b8428e6935" config-ref="HTTP_Listener_config" path="/read-json" allowedMethods="POST"/>
 		<logger level="INFO" doc:name="Logger" doc:id="2602901b-0788-444b-9f84-89df591780c8" message="#[payload.employeeID]"/>
 	</flow>
 </mule>
