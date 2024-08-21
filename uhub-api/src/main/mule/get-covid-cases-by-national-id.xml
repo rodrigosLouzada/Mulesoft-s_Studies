@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="get-covid-cases-by-national-idFlow" doc:id="c4bb63a6-ec6a-4dff-99f7-05f6eb7c8dbd" >
 		<http:listener doc:name="Listener" doc:id="380b5d93-dd3c-4d0e-ae21-694aeea13ddb" config-ref="HTTP_Listener_config" path="v1/cases/{cpf}/{nome}"/>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="04a8ddd4-eea6-4cad-a30d-e15804ba8243" variableName="covidPayload"/>
 		<logger level="INFO" doc:name="Logger" doc:id="1c26e0f3-0551-4d48-99dc-33265a6318d1" message='#[{&#10;"cpf": attributes.uriParams.cpf, &#10;"nome": attributes.uriParams.nome&#10;	&#10;}]'/>
 		<set-variable value="DINHO" doc:name="Set Variable" doc:id="9ecf96f2-0da0-4411-9dea-5b93ab0d0d6a" variableName="userName"/>
 		<set-variable value="#[payload.nationalID]" doc:name="Set Variable" doc:id="751bae1f-4c2c-462c-ad48-c3b72b5103f4" variableName="NID"/>
 		<logger level="INFO" doc:name="Logger" doc:id="83fe5870-1a66-4dd9-8408-b867d94ab4bb" message="#[vars.NID]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="533e38d0-4b96-4296-8767-993ccba1b98f" message="#[vars.covidPayload.phone]"/>
 	</flow>
 </mule>
