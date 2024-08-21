@@ -8,7 +8,11 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
 	<flow name="register-covid-caseFlow" doc:id="ca494bfc-1774-4a96-afc7-ba28495d04fa" >
-		<http:listener doc:name="Listener" doc:id="a0e4961c-2af5-4641-a240-2ab984ea2a8a" config-ref="HTTP_Listener_config" path="v1/cases" allowedMethods="POST"/>
+		<http:listener doc:name="Listener" doc:id="a0e4961c-2af5-4641-a240-2ab984ea2a8a" config-ref="HTTP_Listener_config" path="v1/cases" allowedMethods="POST">
+			<http:response statusCode="200" reasonPhrase='"OK"' >
+				<http:body ><![CDATA[#["success"]]]></http:body>
+			</http:response>
+		</http:listener>
 		<logger level="INFO" doc:name="Logger" doc:id="3013f156-a463-4ab1-a2a4-87251c7e7755" message="#[payload.source]"/>
 	</flow>
 </mule>
