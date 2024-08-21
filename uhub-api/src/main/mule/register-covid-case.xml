@@ -9,10 +9,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	</http:listener-config>
 	<flow name="register-covid-caseFlow" doc:id="ca494bfc-1774-4a96-afc7-ba28495d04fa" >
 		<http:listener doc:name="Listener" doc:id="a0e4961c-2af5-4641-a240-2ab984ea2a8a" config-ref="HTTP_Listener_config" path="v1/cases" allowedMethods="POST">
-			<http:response statusCode="200" reasonPhrase='"OK"' >
+			<http:response statusCode="#[vars.statusCode]" reasonPhrase='#[vars.httpReason]' >
 				<http:body ><![CDATA[#["success"]]]></http:body>
 			</http:response>
 		</http:listener>
 		<logger level="INFO" doc:name="Logger" doc:id="3013f156-a463-4ab1-a2a4-87251c7e7755" message="#[payload.source]"/>
+		<set-payload value='#["success"]' doc:name="Set Payload" doc:id="69358d0e-d694-45e3-8dab-a21bd27ce1d8" />
+		<set-variable value="200" doc:name="Set Variable" doc:id="9a9ba882-979d-4ab5-883a-3c5d50279b1b" variableName="statusCode"/>
+		<set-variable value='#["OK"]' doc:name="Set Variable" doc:id="43b95491-e894-4efa-8343-790ad7b7cf5d" variableName="httpReason"/>
 	</flow>
 </mule>
