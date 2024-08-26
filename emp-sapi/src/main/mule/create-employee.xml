@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3d965b48-5f53-4a18-a73e-adfd6b2788b4" basePath="emp-sapi" >
 		<http:listener-connection host="0.0.0.0" port="8091" />
 	</http:listener-config>
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="394c6b51-99d2-4a15-a866-6280ab9c4a6a" >
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="e7591179-251c-4184-923a-35ea609ef88f" queryTimeout="0" input-parameters="#[{&#10;	empID: payload.employeeID ,&#10;	empName: payload.employeeName,&#10;	empStatus : payload.employeeStatus&#10;}]" fetchSize="" autoGenerateKeys="false" errorMappings="" sql="insert into emp(emp_id, emp_name, emp_status) values(:empID, :empName, :empStatus)" target="" transactionalAction="JOIN_IF_POSSIBLE" maxRows="" config-ref="Database_Config" targetValue="#[payload]" queryTimeoutUnit="SECONDS">
 		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
 	</db:config>
 	<flow name="create-employeeFlow" doc:id="9b2fae03-ab53-4728-88b7-f49fef12d31b" >
