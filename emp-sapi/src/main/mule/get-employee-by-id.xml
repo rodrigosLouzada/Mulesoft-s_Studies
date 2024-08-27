@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config2" doc:name="HTTP Listener config" doc:id="edfc42cc-811d-4f58-b504-a6aad3f9fca6" basePath="emp-sasi" >
+		<http:listener-connection host="0.0.0.0" port="8094" />
+	</http:listener-config>
+	<flow name="get-employee-by-idFlow" doc:id="24d8a4fd-53a8-4c12-8ab5-0765c39c13a7" >
+		<http:listener doc:name="get employee Listener" doc:id="bada91b8-053d-431b-b163-15d7fbe474fb" config-ref="HTTP_Listener_config2" path="get-employee"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c767a6e8-03e2-44cc-8c86-4dc8f368abf8" message="STARTED FLOW"/>
+		<db:select doc:name="Select" doc:id="84cb9850-e033-44fc-ad5f-d1c6ae472627" config-ref="Database_Config">
+			<db:sql ><![CDATA[select emp_id, emp_name, emp_status 
+from emp where 
+emp_id = :empID]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empID: attributes.queryParams.employeeID
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="set response" doc:id="2f350597-e816-4a4f-a84a-84438f37be75">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	employeeID: payload[0].emp_id,
+	employeeName: payload[0].emp_name,
+	emplyeeStatus: payload[0].emp_status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end Log" doc:id="173ba2aa-6acd-42c4-88f9-7372add9b46f" message="COMPLETED FLOW"/>
+	</flow>
+</mule>
