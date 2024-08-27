@@ -1,31 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3d965b48-5f53-4a18-a73e-adfd6b2788b4" basePath="emp-sapi" >
-		<http:listener-connection host="0.0.0.0" port="8091" />
+	<http:listener-config name="HTTP_Listener_config"
+		doc:name="HTTP Listener config"
+		doc:id="3d965b48-5f53-4a18-a73e-adfd6b2788b4" basePath="emp-sapi">
+		<http:listener-connection host="0.0.0.0"
+			port="8091" />
 	</http:listener-config>
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="e7591179-251c-4184-923a-35ea609ef88f" queryTimeout="0" input-parameters="#[{&#10;	empID: payload.employeeID ,&#10;	empName: payload.employeeName,&#10;	empStatus : payload.employeeStatus&#10;}]" fetchSize="" autoGenerateKeys="false" errorMappings="" sql="insert into emp(emp_id, emp_name, emp_status) values(:empID, :empName, :empStatus)" target="" transactionalAction="JOIN_IF_POSSIBLE" maxRows="" config-ref="Database_Config" targetValue="#[payload]" queryTimeoutUnit="SECONDS">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="d6c4d995-3648-4e37-be8d-38a3ede1f8d4" >
 		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
 	</db:config>
-	<flow name="create-employeeFlow" doc:id="9b2fae03-ab53-4728-88b7-f49fef12d31b" >
-		<http:listener doc:name="CreateEmployeeListener" doc:id="a3039faa-a740-41e7-8365-dfdf2ff89d1e" config-ref="HTTP_Listener_config" path="create-employee" allowedMethods="POST"/>
-		<logger level="INFO" doc:name="Start log" doc:id="b75ebd91-644f-409a-9d4f-72f2b73751f8" message="the create employee flow started"/>
-		<db:insert doc:name="Insert" doc:id="e7591179-251c-4184-923a-35ea609ef88f" config-ref="Database_Config">
-			<db:sql ><![CDATA[insert into emp(emp_id, emp_name, emp_status) values(:empID, :empName, :empStatus)]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{
+	<flow name="create-employeeFlow"
+		doc:id="9b2fae03-ab53-4728-88b7-f49fef12d31b">
+		<http:listener doc:name="CreateEmployeeListener"
+			doc:id="a3039faa-a740-41e7-8365-dfdf2ff89d1e"
+			config-ref="HTTP_Listener_config" path="create-employee"
+			allowedMethods="POST" />
+		<logger level="INFO" doc:name="Start log"
+			doc:id="b75ebd91-644f-409a-9d4f-72f2b73751f8"
+			message="the create employee flow started" />
+		<db:insert doc:name="Insert"
+			doc:id="e7591179-251c-4184-923a-35ea609ef88f"
+			config-ref="Database_Config">
+			<db:sql><![CDATA[insert into emp(emp_id, emp_name, emp_status) values(:empID, :empName, :empStatus)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
 	empID: payload.employeeID ,
 	empName: payload.employeeName,
 	empStatus : payload.employeeStatus
 }]]]></db:input-parameters>
 		</db:insert>
-		<ee:transform doc:name="Transform Message" doc:id="7f45b8d9-8d3f-454e-8a10-d85ba043bfca" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message"
+			doc:id="7f45b8d9-8d3f-454e-8a10-d85ba043bfca">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -34,6 +50,8 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="end log" doc:id="902f0a63-35f6-4ba6-9392-35ad7ee43f57" message="the flow has completed"/>
+		<logger level="INFO" doc:name="end log"
+			doc:id="902f0a63-35f6-4ba6-9392-35ad7ee43f57"
+			message="the flow has completed" />
 	</flow>
 </mule>
