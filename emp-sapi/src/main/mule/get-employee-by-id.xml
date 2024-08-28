@@ -32,11 +32,14 @@ emp_id = :empID]]></db:sql>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{
-	employeeID: payload[0].emp_id,
-	employeeName: payload[0].emp_name,
-	emplyeeStatus: payload[0].emp_status
-}]]></ee:set-payload>
+ 
+	payload map(obj, ind) -> {
+		employeeID: obj.emp_id,
+		employeeName:obj.emp_name,
+		emplyeeStatus: obj.empstatus 
+		}
+
+	//]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="end Log" doc:id="173ba2aa-6acd-42c4-88f9-7372add9b46f" message="COMPLETED FLOW"/>

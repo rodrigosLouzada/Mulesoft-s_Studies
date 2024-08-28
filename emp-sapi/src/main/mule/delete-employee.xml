@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="aedbdbc8-65e9-47b8-8e85-9167d5cd427d" basePath="emp-sapi" >
+		<http:listener-connection host="0.0.0.0" port="8092" />
+	</http:listener-config>
+	<flow name="delete-employeeFlow" doc:id="79df1ba7-838c-4b54-8389-18613f7b9c68" >
+		<http:listener doc:name="Listener" doc:id="ae79a114-6282-4e18-b42a-62ebbcd0b9e2" config-ref="HTTP_Listener_config" path="delete-employee/{employeeID}/{employeeName}" allowedMethods="DELETE"/>
+		<logger level="INFO" doc:name="Logger init" doc:id="c83b4e47-ff53-453b-89ff-c8e6769a2d15" message="THE DELETE FLOW HAS STARTED"/>
+		<db:stored-procedure doc:name="call delete employee Stored procedure" doc:id="cdd36886-c2d1-41ac-a453-21d12d2799f7" config-ref="Database_Config">
+			<db:sql ><![CDATA[{call delete_emp(:empID, :empName)}]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"empID": attributes.uriParams.employeeID,
+	"empName": attributes.uriParams.employeeName
+}]]]></db:input-parameters>
+		</db:stored-procedure>
+		<ee:transform doc:name="Transform Message" doc:id="97ebe2ef-a6b4-466f-ac8b-5bbec4eb787d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="SET RESONSE" doc:id="ae6dd5b0-6a9b-4e08-a27d-4dcbd643bbaa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 200,
+	"message": "OoooooooK"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="END Logger" doc:id="6c9faec6-b8c8-4ae7-a76e-0deb6cdf8b44" message="THE FLOW HAS COMPLETED"/>
+	</flow>
+</mule>

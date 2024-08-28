@@ -10,12 +10,7 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config"
-		doc:name="HTTP Listener config"
-		doc:id="3d965b48-5f53-4a18-a73e-adfd6b2788b4" basePath="emp-sapi">
-		<http:listener-connection host="0.0.0.0"
-			port="8091" />
-	</http:listener-config>
+
 	<flow name="create-employeeFlow"
 		doc:id="9b2fae03-ab53-4728-88b7-f49fef12d31b">
 		<http:listener doc:name="CreateEmployeeListener"
@@ -40,7 +35,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{
+{ 
 	status: 200,
 	message: "Success"
 }]]></ee:set-payload>
