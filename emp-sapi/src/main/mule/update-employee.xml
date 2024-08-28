@@ -1,27 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="09848c0f-442b-4881-90f0-d2ba926bd3f6" basePath="emp-sasi">
-		<http:listener-connection host="0.0.0.0" port="8099" />
+	<http:listener-config name="HTTP_Listener_config1"
+		doc:name="HTTP Listener config"
+		doc:id="09848c0f-442b-4881-90f0-d2ba926bd3f6" basePath="emp-sasi">
+		<http:listener-connection host="0.0.0.0"
+			port="8099" />
 	</http:listener-config>
-	<flow name="update-employeeFlow" doc:id="7c98b3fe-066f-446e-985a-2a0b6d38b967" >
-		<http:listener doc:name="Update employee Listener" doc:id="cd91e70c-55e1-4a5f-9f04-0cf5fb50c1c6" config-ref="HTTP_Listener_config1" path="update-employee" allowedMethods="PUT" responseStreamingMode="ALWAYS"/>
-		<logger level="INFO" doc:name="Logger start" doc:id="0a2404fe-14e6-40be-8526-0493f0598bd9" message="the flow has started"/>
-		<db:update doc:name="Update" doc:id="305620c7-437c-457d-96fe-3f771324faf1" config-ref="Database_Config">
-			<db:sql ><![CDATA[update emp set emp_status =:empStatus where emp_id=:empID]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{	
+	<flow name="update-employeeFlow"
+		doc:id="7c98b3fe-066f-446e-985a-2a0b6d38b967">
+		<http:listener doc:name="Update employee Listener"
+			doc:id="cd91e70c-55e1-4a5f-9f04-0cf5fb50c1c6"
+			config-ref="HTTP_Listener_config1" path="update-employee"
+			allowedMethods="PUT" responseStreamingMode="ALWAYS" />
+		<logger level="INFO" doc:name="Logger start"
+			doc:id="0a2404fe-14e6-40be-8526-0493f0598bd9"
+			message="the flow has started" />
+		<db:update doc:name="Update"
+			doc:id="305620c7-437c-457d-96fe-3f771324faf1"
+			config-ref="Database_Config">
+			<db:sql><![CDATA[update emp set emp_status =:empStatus where emp_id=:empID]]></db:sql>
+			<db:input-parameters><![CDATA[#[{	
 	empStatus: payload.employee.employeeStatus ,
 	empID: payload.employee.employeeID
 }]]]></db:input-parameters>
 		</db:update>
-		<ee:transform doc:name="Transform Message" doc:id="53a391e6-89b8-40a5-aed9-a1cd49971db6" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message"
+			doc:id="53a391e6-89b8-40a5-aed9-a1cd49971db6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
 ---
 {
@@ -32,6 +48,7 @@ output application/xml
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger end" doc:id="cb6d32f8-bb9e-471f-9c89-dd56d85d242f" message="deployed flow"/>
+		<logger level="INFO" doc:name="Logger end"
+			doc:id="cb6d32f8-bb9e-471f-9c89-dd56d85d242f" message="deployed flow" />
 	</flow>
 </mule>

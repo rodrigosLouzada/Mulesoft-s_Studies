@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config"
+		doc:name="Database Config"
+		doc:id="5df8fcfc-f4e7-4ad1-ac6b-cc6b64a19f41">
+		<db:oracle-connection host="localhost"
+			user="system" password="@dinho32" instance="XE" />
+	</db:config>
+	<flow name="get-all-employeesFlow"
+		doc:id="9c3b7be4-fe2d-46e1-b8f6-d4a0710821c3">
+		<http:listener doc:name="ListenerALL"
+			doc:id="90c5bd7b-7cfb-4df8-9abe-234f3a119a82"
+			config-ref="HTTP_Listener_config2" path="get-all-employees" />
+		<logger level="INFO" doc:name="LoggerINIT"
+			doc:id="fc8dbf32-f1ef-46ad-b108-eb823acf61be"
+			message="FLOW HAS STARTED" />
+		<db:select doc:name="Select"
+			doc:id="558faf47-52f1-40b1-8513-b259824c25b7"
+			config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * FROM emp]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="SET RESPONSE" doc:id="45f4c296-b43b-4bae-8842-747daac603e1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+employees: payload map (payload01, indexOfPayload01) -> {
+	employeeID: payload01.emp_id,
+	employeeName: payload01.emp_name,
+	employeeStatus: payload01.emp_status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="END LOG" doc:id="0d970586-eb11-40be-bab1-6f3dffbb643b" message="THE FLOW HAS COMPLETED"/>
+	</flow>
+</mule>

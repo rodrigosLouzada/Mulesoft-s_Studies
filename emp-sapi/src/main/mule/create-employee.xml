@@ -16,9 +16,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<http:listener-connection host="0.0.0.0"
 			port="8091" />
 	</http:listener-config>
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="d6c4d995-3648-4e37-be8d-38a3ede1f8d4" >
-		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
-	</db:config>
 	<flow name="create-employeeFlow"
 		doc:id="9b2fae03-ab53-4728-88b7-f49fef12d31b">
 		<http:listener doc:name="CreateEmployeeListener"
@@ -29,8 +26,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			doc:id="b75ebd91-644f-409a-9d4f-72f2b73751f8"
 			message="the create employee flow started" />
 		<db:insert doc:name="Insert"
-			doc:id="e7591179-251c-4184-923a-35ea609ef88f"
-			config-ref="Database_Config">
+			doc:id="e7591179-251c-4184-923a-35ea609ef88f">
 			<db:sql><![CDATA[insert into emp(emp_id, emp_name, emp_status) values(:empID, :empName, :empStatus)]]></db:sql>
 			<db:input-parameters><![CDATA[#[{
 	empID: payload.employeeID ,
