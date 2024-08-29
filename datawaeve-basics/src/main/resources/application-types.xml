@@ -25,6 +25,9 @@ type covid_register_case_meta_data = {|
 
 ]]></types:shape>
     </types:type>
+    <types:type name="update-covid-case-meta-data" format="xml">
+      <types:example format="xml" element="covidCase" location="examples/register2XM.xml"/>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#3ef91c6a-a318-45c4-8ae1-cdc4fdae0d46">
     <types:processor-declaration>
@@ -40,6 +43,15 @@ type covid_register_case_meta_data = {|
       <types:input-event>
         <types:message>
           <types:payload type="covid-register-case-meta-data"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#94f645e5-9157-4faf-9e04-e4e4c055473d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="update-covid-case-meta-data"/>
         </types:message>
       </types:input-event>
     </types:processor-declaration>

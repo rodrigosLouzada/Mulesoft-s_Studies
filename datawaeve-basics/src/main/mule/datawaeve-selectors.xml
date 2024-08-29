@@ -31,4 +31,23 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<flow name="datawaeve-selectorsFlow2" doc:id="6b0863cb-5086-43fc-84a4-35e02017b5dc" >
+		<ee:transform doc:name="Transform Message" doc:id="94f645e5-9157-4faf-9e04-e4e4c055473d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "singleValueSelector": payload.people.person.id,
+    "singleValueSelectorW/INDEX": payload.people.*person[0].id,
+    "multipleValueSelector": payload.people.*person[0] ,
+	"multipleValueSelectorbyFild": payload.people.*person[0].id ,
+    "range": payload.people.*person[0 to 2],
+    "attributes": payload.people.*person[0].location.@country
+  
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 </mule>

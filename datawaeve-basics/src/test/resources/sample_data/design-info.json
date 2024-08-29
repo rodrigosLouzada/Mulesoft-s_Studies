@@ -1,5 +1,8 @@
 {
   "sampleData": {
+    "94f645e5-9157-4faf-9e04-e4e4c055473d": {
+      "payload": "sample_data/covidcase.xml"
+    },
     "3320e572-3f62-499e-a3f5-498b05f3085f": {
       "payload": "sample_data/json_1.json"
     },
