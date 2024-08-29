@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "status": "Active",
+        "roles": {
+            "role1": "Admin",
+            "role2": "User"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "status": "Inactive",
+        "roles": {
+            "role1": "User"
+        }
+    },
+    {
+        "id": 3,
+        "name": "Jim Brown",
+        "status": "Pending",
+        "roles": {
+            "role1": "User",
+            "role2": "Guest"
+        }
+    }
+]
