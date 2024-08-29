@@ -19,4 +19,15 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<flow name="dataweave-variablesFlow" doc:id="7e571670-d4d0-4426-b2c3-4122a04a6a61" >
+		<ee:transform doc:name="Transform Message" doc:id="74acdd3e-13f6-41cd-b491-bac08bd0b9fa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA["success-response"]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="statusCode" ><![CDATA[200]]></ee:set-variable>
+				<ee:set-variable variableName="httpReason" ><![CDATA["OK"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
 </mule>
