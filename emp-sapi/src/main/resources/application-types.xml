@@ -1,4 +1,47 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
-  <types:catalog/>
+  <types:catalog>
+    <types:type name="covid-register" format="json">
+      <types:shape format="weave" example="examples/registerCovid.json"><![CDATA[%dw 2.0
+
+type covid_register = {|
+  source: String, 
+  caseType: String, 
+  firstName: String, 
+  lastName: String, 
+  phone: String, 
+  email: String, 
+  dateOfBirth: String, 
+  nationalID: String, 
+  nationalIDType: String, 
+  address: {|
+    streetAddress: String, 
+    city: String, 
+    state: String, 
+    postal: String, 
+    country: String
+  |}
+|} {"example": "{\\\"source\\\":\\\"Hospital1\\\",\\\"caseType\\\":\\\"positive\\\",\\\"firstName\\\":\\\"John\\\",\\\"lastName\\\":\\\"Nixon\\\",\\\"phone\\\":\\\"541-754-3010\\\",\\\"email\\\":\\\"john@gmail.com\\\",\\\"dateOfBirth\\\":\\\"1989-04-26\\\",\\\"nationalID\\\":\\\"209-49-6193\\\",\\\"nationalIDType\\\":\\\"SSN\\\",\\\"address\\\":{\\\"streetAddress\\\":\\\"1600\u00A0Pennsylvania\u00A0Avenue\u00A0NW\\\",\\\"city\\\":\\\"Washington\\\",\\\"state\\\":\\\"DC\\\",\\\"postal\\\":\\\"20500\\\",\\\"country\\\":\\\"USA\\\"}}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#cb9ca658-e077-4d57-bdfa-f24eb9691af4">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="covid-register"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#fa2983ce-9bb4-4bd2-aff2-920b84706665">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="covid-register"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
 </types:mule>
