@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="dataweave-PREvariablesFlow" doc:id="218e5c8c-e312-4d7b-9b6a-827bf9813a47" >
 		<ee:transform doc:name="Transform Message" doc:id="26814772-436c-4f94-b1eb-3c75a11424da" >
 			<ee:message >
@@ -28,6 +29,24 @@ output application/json
 				<ee:set-variable variableName="statusCode" ><![CDATA[200]]></ee:set-variable>
 				<ee:set-variable variableName="httpReason" ><![CDATA["OK"]]></ee:set-variable>
 			</ee:variables>
+		</ee:transform>
+	</flow>
+	<flow name="dataweave-user-defined-variablesFlow1" doc:id="2f93e6df-2307-43d2-a4bc-0b35cc98d386" >
+		<ee:transform doc:name="Transform Message" doc:id="d0cd1f2d-024f-4ebe-8828-03ab9e9c045e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var firstName = "dinho"
+var lastName = "-bandido"
+var Statecountry = "brasil-DF"
+---
+
+ "multiUsesforLocalVars":{
+ 	fullName:  firstName ++ lastName,
+ 	country: Statecountry,
+ 	state: Statecountry
+ }]]></ee:set-payload>
+			</ee:message>
 		</ee:transform>
 	</flow>
 </mule>
