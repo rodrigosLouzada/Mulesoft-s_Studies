@@ -1,30 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="5b2af91b-4446-480c-abe7-353715ac09fa" >
+		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
+	</db:config>
 	<flow name="register-covid-case" doc:id="62987b79-ec86-4a7e-9214-5bdfcd408ad2" >
 		<http:listener doc:name="Listener" doc:id="96bc8e2a-d5b1-4e83-a642-61a5f0b55f3b" config-ref="HTTP_Listener_config" path="v1/cases2" allowedMethods="POST"/>
-		<logger level="INFO" doc:name="Logger" doc:id="8d2c79cf-2d24-49d7-a2f0-631d6b56fb8e" message="#[payload]"/>
-		<ee:transform doc:name="Transform Message" doc:id="ce37be11-4251-42ea-95d2-dca13cd70d2f" >
+		<logger level="INFO" doc:name="START Log" doc:id="8d2c79cf-2d24-49d7-a2f0-631d6b56fb8e" message="#[payload]"/>
+		<ee:transform doc:name="prepare covid case payload" doc:id="f9c64cb0-a2e8-4fc9-bbfc-e0586a4a6071" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/xml
+output application/java
+var actionDate = now() as String {format: "yyyy-MM-dd"}
+var owner = "UHIS"
 ---
 {
-	COVID_CASE: {
-		FIRST_NAME: payload.firstName,
-		LAST_NAME: payload.lastName,
-		PHONE: payload.phone,
-		EMAIL: payload.email,
-		DATE_OF_BIRTH: payload.dateOfBirth as Date,
-		COUNTRY: payload.address.country
-	}
+	country: payload.address.country,
+	city: payload.address.city,
+	date_of_birth: payload.dateOfBirth,
+	case_type: payload.caseType,
+	last_name: payload.lastName,
+	source: payload.source,
+	national_id_type: payload.nationalID,
+	update_date: actionDate,
+	created_by: owner,
+	phone: payload.phone,
+	state: payload.address.state,
+	postal: payload.address.postal,
+	create_date: actionDate,
+	update_by: owner,
+	first_name: payload.firstName,
+	email: payload.email
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="2d1930dd-936a-48f9-9fb3-f82717b0fa7a" message="#[payload]"/>
+		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into cvd_case_master 
+    (source, 
+     case_type, 
+     first_name, 
+     last_name, 
+     phone, 
+     email, 
+     date_of_birth, 
+     national_id, 
+     national_id_type, 
+     street_address, 
+     city, 
+     state, 
+     postal, 
+     country, 
+     create_date, 
+     update_date, 
+     create_by, 
+     update_by) 
+values 
+    (:source, 
+     :case_type, 
+     :first_name, 
+     :last_name, 
+     :phone, 
+     :email, 
+     TO_DATE(:date_of_birth,'YYYY-MM-DD'), 
+     :national_id, 
+     :national_id_type, 
+     :street_address, 
+     :city, 
+     :state, 
+     :postal, 
+     :country, 
+     TO_DATE(:create_date, 'YYYY-MM-DD'), 
+     TO_DATE(:update_date, 'YYYY-MM-DD'), 
+     :create_by, 
+     :update_by)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="END LOG" doc:id="d66ea4b1-9d7f-4e87-8d62-20703b3c3ee5" message="COMPLETED FLOW : #[payload]"/>
 	</flow>
 </mule>
