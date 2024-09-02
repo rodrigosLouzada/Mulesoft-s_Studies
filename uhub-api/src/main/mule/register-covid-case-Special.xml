@@ -10,16 +10,20 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
 	</db:config>
 	<flow name="register-covid-case" doc:id="62987b79-ec86-4a7e-9214-5bdfcd408ad2" >
-		<http:listener doc:name="Listener" doc:id="96bc8e2a-d5b1-4e83-a642-61a5f0b55f3b" config-ref="HTTP_Listener_config" path="v1/cases2" allowedMethods="POST"/>
+		<http:listener doc:name="Listener" doc:id="96bc8e2a-d5b1-4e83-a642-61a5f0b55f3b" config-ref="HTTP_Listener_config" path="v1/casesSpecial" allowedMethods="POST"/>
 		<logger level="INFO" doc:name="START Log" doc:id="8d2c79cf-2d24-49d7-a2f0-631d6b56fb8e" message="#[payload]"/>
 		<ee:transform doc:name="prepare covid case payload" doc:id="f9c64cb0-a2e8-4fc9-bbfc-e0586a4a6071" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="covidPayload" ><![CDATA[%dw 2.0
 output application/java
 var actionDate = now() as String {format: "yyyy-MM-dd"}
 var owner = "UHIS"
 ---
 {
+	national_id: payload.nationalID,
+	street_address: payload.address.streetAddress,
 	country: payload.address.country,
 	city: payload.address.city,
 	date_of_birth: payload.dateOfBirth,
@@ -28,7 +32,7 @@ var owner = "UHIS"
 	source: payload.source,
 	national_id_type: payload.nationalID,
 	update_date: actionDate,
-	created_by: owner,
+	create_by: owner,
 	phone: payload.phone,
 	state: payload.address.state,
 	postal: payload.address.postal,
@@ -36,8 +40,8 @@ var owner = "UHIS"
 	update_by: owner,
 	first_name: payload.firstName,
 	email: payload.email
-}]]></ee:set-payload>
-			</ee:message>
+}]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
 		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config">
 			<db:sql ><![CDATA[insert into cvd_case_master 
@@ -66,7 +70,7 @@ values
      :last_name, 
      :phone, 
      :email, 
-     TO_DATE(:date_of_birth,'YYYY-MM-DD'), 
+     to_date(:date_of_birth,'YYYY-MM-DD'), 
      :national_id, 
      :national_id_type, 
      :street_address, 
@@ -74,12 +78,19 @@ values
      :state, 
      :postal, 
      :country, 
-     TO_DATE(:create_date, 'YYYY-MM-DD'), 
-     TO_DATE(:update_date, 'YYYY-MM-DD'), 
+     to_date(:create_date, 'YYYY-MM-DD'), 
+     to_date(:update_date, 'YYYY-MM-DD'), 
      :create_by, 
      :update_by)]]></db:sql>
-			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+			<db:input-parameters ><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
 		</db:insert>
+		<db:select doc:name="Select" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config">
+			<db:sql ><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = nationalid
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	nationalID: vars.covidPayload.national_id
+}]]]></db:input-parameters>
+		</db:select>
 		<logger level="INFO" doc:name="END LOG" doc:id="d66ea4b1-9d7f-4e87-8d62-20703b3c3ee5" message="COMPLETED FLOW : #[payload]"/>
 	</flow>
 </mule>
