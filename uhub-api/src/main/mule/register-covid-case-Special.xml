@@ -10,7 +10,9 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
 	</db:config>
 	<flow name="register-covid-case" doc:id="62987b79-ec86-4a7e-9214-5bdfcd408ad2" >
-		<http:listener doc:name="Listener" doc:id="96bc8e2a-d5b1-4e83-a642-61a5f0b55f3b" config-ref="HTTP_Listener_config" path="v1/casesSpecial" allowedMethods="POST"/>
+		<http:listener doc:name="Listener" doc:id="96bc8e2a-d5b1-4e83-a642-61a5f0b55f3b" config-ref="HTTP_Listener_config" path="v1/casesSpecial" allowedMethods="POST">
+			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
+		</http:listener>
 		<logger level="INFO" doc:name="START Log" doc:id="8d2c79cf-2d24-49d7-a2f0-631d6b56fb8e" message="#[payload]"/>
 		<ee:transform doc:name="prepare covid case payload" doc:id="f9c64cb0-a2e8-4fc9-bbfc-e0586a4a6071" >
 			<ee:message >
@@ -18,7 +20,9 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			<ee:variables >
 				<ee:set-variable variableName="covidPayload" ><![CDATA[%dw 2.0
 output application/java
-var actionDate = now() as String {format: "yyyy-MM-dd"}
+var actionDate = now() as String {
+	format: "yyyy-MM-dd"
+}
 var owner = "UHIS"
 ---
 {
@@ -84,13 +88,27 @@ values
      :update_by)]]></db:sql>
 			<db:input-parameters ><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
 		</db:insert>
-		<db:select doc:name="Select" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config">
-			<db:sql ><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = nationalid
+		<db:select doc:name="Select CASE_ID (PK)" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config">
+			<db:sql ><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :national_ID
 ]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{
-	nationalID: vars.covidPayload.national_id
+	national_ID: vars.covidPayload.national_id
 }]]]></db:input-parameters>
 		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="0a41f49b-3419-4e99-9f3e-3b4f1c029a12" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"caseID": payload[0].CASE_ID
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="statusReason" ><![CDATA["ok"]]></ee:set-variable>
+				<ee:set-variable variableName="statusCode" ><![CDATA[201]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<logger level="INFO" doc:name="END LOG" doc:id="d66ea4b1-9d7f-4e87-8d62-20703b3c3ee5" message="COMPLETED FLOW : #[payload]"/>
 	</flow>
 </mule>
