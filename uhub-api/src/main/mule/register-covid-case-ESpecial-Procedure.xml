@@ -89,14 +89,14 @@ output application/json
 	</flow>
 	<flow name="register-covid-case-SpecialFlow-Procedure" doc:id="d762fc63-30f9-4b4c-99cc-e39cd72268af" >
 		<logger level="INFO" doc:name="Logger" doc:id="aae3b85e-b997-4a55-a041-fe69faa65ce1" />
-		<db:select doc:name="Select CASE_ID (PK)" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config">
+		<db:select doc:name="Select CASE_ID (PK)" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config_PROC">
 			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :national_ID
 ]]></db:sql>
 			<db:input-parameters><![CDATA[#[{
 	national_ID: vars.covidPayload.national_id
 }]]]></db:input-parameters>
 		</db:select>
-		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config" autoGenerateKeys="true">
+		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config_PROC" autoGenerateKeys="true">
 			<db:sql><![CDATA[insert into cvd_case_master 
     (source, 
      case_type, 
