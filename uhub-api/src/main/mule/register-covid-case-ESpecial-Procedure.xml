@@ -6,8 +6,10 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
-	
-	<flow name="register-covid-case" doc:id="62987b79-ec86-4a7e-9214-5bdfcd408ad2" >
+	<db:config name="Database_Config_PROC" doc:name="Database Config" doc:id="03e0f483-7ca4-4a83-b68e-990354014b3a" >
+		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
+	</db:config>
+	<flow name="register-covid-case-Procedure" doc:id="62987b79-ec86-4a7e-9214-5bdfcd408ad2" >
 		<http:listener doc:name="Listener" doc:id="96bc8e2a-d5b1-4e83-a642-61a5f0b55f3b" config-ref="HTTP_Listener_config" path="v1/casesSpecial" allowedMethods="POST">
 			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
 		</http:listener>
@@ -18,9 +20,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			<ee:variables >
 				<ee:set-variable variableName="covidPayload" ><![CDATA[%dw 2.0
 output application/java
-var actionDate = now() as String {
-	format: "yyyy-MM-dd"
-}
+var actionDate = now() as String {format: "yyyy-MM-dd"}
 var owner = "UHIS"
 ---
 {
@@ -45,8 +45,59 @@ var owner = "UHIS"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config_PROC" autoGenerateKeys="true">
-			<db:sql ><![CDATA[insert into cvd_case_master 
+		<db:stored-procedure doc:name="Stored procedure" doc:id="2719d7f3-fe38-48e0-b8c1-ff65a626cd75" config-ref="Database_Config_PROC">
+			<db:sql><![CDATA[{call insert_covid_master(
+    :source,
+    :case_type,
+    :first_name,
+    :last_name,
+    :phone,
+    :email,
+    :date_of_birth,
+    :national_id,
+    :national_id_type,
+    :street_address,
+    :city,
+    :state,
+    :postal,
+    :country,
+    :create_date,
+    :update_date,
+    :create_by,
+    :update_by,
+    :case_id )}]]></db:sql>
+			<db:input-parameters><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
+			<db:output-parameters >
+				<db:output-parameter key="case_id" type="INTEGER" />
+			</db:output-parameters>
+		</db:stored-procedure>
+		<ee:transform doc:name="Prepare Response" doc:id="0a41f49b-3419-4e99-9f3e-3b4f1c029a12" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	caseID: payload.case_id as String
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="statusReason" ><![CDATA["ok"]]></ee:set-variable>
+				<ee:set-variable variableName="statusCode" ><![CDATA[201]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="END LOG" doc:id="d66ea4b1-9d7f-4e87-8d62-20703b3c3ee5" message="COMPLETED FLOW : #[payload]"/>
+	</flow>
+	<flow name="register-covid-case-SpecialFlow-Procedure" doc:id="d762fc63-30f9-4b4c-99cc-e39cd72268af" >
+		<logger level="INFO" doc:name="Logger" doc:id="aae3b85e-b997-4a55-a041-fe69faa65ce1" />
+		<db:select doc:name="Select CASE_ID (PK)" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config">
+			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :national_ID
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	national_ID: vars.covidPayload.national_id
+}]]]></db:input-parameters>
+		</db:select>
+		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config" autoGenerateKeys="true">
+			<db:sql><![CDATA[insert into cvd_case_master 
     (source, 
      case_type, 
      first_name, 
@@ -84,35 +135,10 @@ values
      to_date(:update_date, 'YYYY-MM-DD'), 
      :create_by, 
      :update_by)]]></db:sql>
-			<db:input-parameters ><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
-			<db:auto-generated-keys-column-names >
+			<db:input-parameters><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
+			<db:auto-generated-keys-column-names>
 				<db:auto-generated-keys-column-name value="CASE_ID" />
 			</db:auto-generated-keys-column-names>
 		</db:insert>
-		<ee:transform doc:name="Transform Message" doc:id="0a41f49b-3419-4e99-9f3e-3b4f1c029a12" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"caseID": payload[0].CASE_ID as String
-}]]></ee:set-payload>
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="statusReason" ><![CDATA["ok"]]></ee:set-variable>
-				<ee:set-variable variableName="statusCode" ><![CDATA[201]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<logger level="INFO" doc:name="END LOG" doc:id="d66ea4b1-9d7f-4e87-8d62-20703b3c3ee5" message="COMPLETED FLOW : #[payload]"/>
-	</flow>
-	<flow name="register-covid-case-SpecialFlow" doc:id="d762fc63-30f9-4b4c-99cc-e39cd72268af" >
-		<logger level="INFO" doc:name="Logger" doc:id="aae3b85e-b997-4a55-a041-fe69faa65ce1" />
-		<db:select doc:name="Select CASE_ID (PK)" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config_PROC">
-			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :national_ID
-]]></db:sql>
-			<db:input-parameters><![CDATA[#[{
-	national_ID: vars.covidPayload.national_id
-}]]]></db:input-parameters>
-		</db:select>
 	</flow>
 </mule>

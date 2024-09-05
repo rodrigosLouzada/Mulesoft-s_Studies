@@ -6,7 +6,9 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
-	
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="5b2af91b-4446-480c-abe7-353715ac09fa" >
+		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
+	</db:config>
 	<flow name="register-covid-case" doc:id="62987b79-ec86-4a7e-9214-5bdfcd408ad2" >
 		<http:listener doc:name="Listener" doc:id="96bc8e2a-d5b1-4e83-a642-61a5f0b55f3b" config-ref="HTTP_Listener_config" path="v1/casesSpecial" allowedMethods="POST">
 			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
@@ -45,7 +47,7 @@ var owner = "UHIS"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config_PROC" autoGenerateKeys="true">
+		<db:insert doc:name="Insert COVID CASE MASTER" doc:id="3be069b4-10ea-4d28-a8c3-a2d4a2573d33" config-ref="Database_Config" autoGenerateKeys="true">
 			<db:sql ><![CDATA[insert into cvd_case_master 
     (source, 
      case_type, 
@@ -107,7 +109,7 @@ output application/json
 	</flow>
 	<flow name="register-covid-case-SpecialFlow" doc:id="d762fc63-30f9-4b4c-99cc-e39cd72268af" >
 		<logger level="INFO" doc:name="Logger" doc:id="aae3b85e-b997-4a55-a041-fe69faa65ce1" />
-		<db:select doc:name="Select CASE_ID (PK)" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config_PROC">
+		<db:select doc:name="Select CASE_ID (PK)" doc:id="0d7b0b87-b301-4cf7-8d01-eedaff98c7df" config-ref="Database_Config">
 			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :national_ID
 ]]></db:sql>
 			<db:input-parameters><![CDATA[#[{
