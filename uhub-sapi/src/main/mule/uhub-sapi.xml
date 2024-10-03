@@ -123,20 +123,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="put:\cases:application\xml:uhub-sapi-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/xml
----
-{
-  response: {
-    caseID: "7"
-  }
-} as Object {encoding: "UTF-8", mediaType: "application/xml"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
+    
     <flow name="get:\health-check:uhub-sapi-config">
         <ee:transform doc:name="Transform Message">
             <ee:message>
@@ -149,81 +136,8 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="get:\reports:uhub-sapi-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    state: "texas",
-    report: {
-      total: 46744,
-      positive: 436744,
-      recovered: 433744,
-      death: 300,
-      vaccinated: 7847848
-    }
-  }
-] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="get:\(nationalID):uhub-sapi-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="nationalID">attributes.uriParams.'nationalID'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    source: "Hospital1",
-    caseID: 456464,
-    caseType: "positive",
-    firstName: "John",
-    lastName: "Nixon",
-    phone: "541-754-3010",
-    email: "john@gmail.com",
-    dateOfBirth: "1989-04-26",
-    nationalID: "209-49-6193",
-    nationalIDType: "SSN",
-    address: {
-      streetAddress: "1600 Pennsylvania Avenue NW",
-      city: "Washington",
-      state: "DC",
-      postal: "20500",
-      country: "USA"
-    }
-  }, 
-  {
-    source: "Hospital1",
-    caseID: 528293,
-    caseType: "negative",
-    firstName: "John",
-    lastName: "Nixon",
-    phone: "541-754-3010",
-    email: "john@gmail.com",
-    dateOfBirth: "1989-04-26",
-    nationalID: "209-49-6193",
-    nationalIDType: "SSN",
-    address: {
-      streetAddress: "1600 Pennsylvania Avenue NW",
-      city: "Washington",
-      state: "DC",
-      postal: "20500",
-      country: "USA"
-    }
-  }
-] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
+    
+    
     <flow name="post:\cases:application\json:uhub-sapi-config">
         <ee:transform doc:name="Transform Message">
             <ee:message>
