@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1950f41c-65e1-44b4-94e0-8de3785e0e0a" basePath="covid" >
+		<http:listener-connection host="0.0.0.0" port="8098" />
+	</http:listener-config>
+	<db:config name="Database_Config_UHUB_1" doc:name="Database Config" doc:id="6fdd05c1-6794-48e5-a3d5-8f0b495e0430" >
+		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" />
+	</db:config>
+	<flow name="get-covid-cases-by-national-idFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
+		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config" path="v1/cases"/>
+		<logger level="INFO" doc:name="Start Log" doc:id="501dd587-5a2b-4c33-979c-8b6519470963" message="started log covid case flow : #[payload]"/>
+		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="a191d2ab-6f0e-4202-9c81-dda36dd7fcef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	source: payload.source
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert covid case master" doc:id="548d9b0e-361c-40d8-b072-1c5c04e96fa3" config-ref="Database_Config_UHUB_1">
+			<db:sql ><![CDATA[insert into cvd_case_master 
+    (source, 
+     case_type, 
+     first_name, 
+     last_name, 
+     phone, 
+     email, 
+     date_of_birth, 
+     national_id, 
+     national_id_type, 
+     street_address, 
+     city, 
+     state, 
+     postal, 
+     country, 
+     create_date, 
+     update_date, 
+     create_by, 
+     update_by) 
+values 
+    (:source, 
+     :case_type, 
+     :first_name, 
+     :last_name, 
+     :phone, 
+     :email, 
+     to_date(:date_of_birth,'YYYY-MM-DD'), 
+     :national_id, 
+     :national_id_type, 
+     :street_address, 
+     :city, 
+     :state, 
+     :postal, 
+     :country, 
+     to_date(:create_date, 'YYYY-MM-DD'), 
+     to_date(:update_date, 'YYYY-MM-DD'), 
+     :create_by, 
+     :update_by)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+	</flow>
+</mule>
