@@ -19,9 +19,28 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
+var actionDate = now() as String {format: "yyyy-MM-dd"}
+var owner = "UHIS"
 ---
 {
-	source: payload.source
+	national_id: payload.nationalID,
+	street_address: payload.address.streetAddress,
+	country: payload.address.country,
+	city: payload.address.city,
+	date_of_birth: payload.dateOfBirth,
+	case_type: payload.caseType,
+	last_name: payload.lastName,
+	source: payload.source,
+	national_id_type: payload.nationalIDType,
+	update_date: actionDate,
+	create_by: owner,
+	phone: payload.phone,
+	state: payload.address.state,
+	postal: payload.address.postal,
+	create_date: actionDate,
+	update_by: owner,
+	first_name: payload.firstName,
+	email: payload.email
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -66,5 +85,6 @@ values
      :update_by)]]></db:sql>
 			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
 		</db:insert>
+		<logger level="INFO" doc:name="END LOG" doc:id="9251a3d7-cf49-4f63-b88d-e03d14aadcf0" message="COMPLETED REGISTER COVID CASE FLOW: #[payload]"/>
 	</flow>
 </mule>
