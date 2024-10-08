@@ -48,15 +48,40 @@ var owner = "UHIS"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_1">
+			<db:sql><![CDATA[{call insert_covid_master(:source, 
+                          :case_type, 
+                          :first_name, 
+                          :last_name, 
+                          :phone, 
+                          :email, 
+                          :date_of_birth, 
+                          :national_id, 
+                          :national_id_type, 
+                          :street_address, 
+                          :city, 
+                          :state, 
+                          :postal, 
+                          :country, 
+                          :create_date, 
+                          :update_date, 
+                          :create_by, 
+                          :update_by, 
+                          :case_id)}
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
+			<db:output-parameters >
+				<db:output-parameter key="case_id" type="INTEGER" />
+			</db:output-parameters>
+		</db:stored-procedure>
 		<ee:transform doc:name="Transform Message" doc:id="6508afc7-c2f5-45b1-8cbf-9ddca1773de1" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	"caseID": payload[0].CASE_ID as String
-}
-]]></ee:set-payload>
+	"caseID": payload.case_id as String
+}]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="statusCode" ><![CDATA[201]]></ee:set-variable>
@@ -117,6 +142,5 @@ values
 			<db:auto-generated-keys-column-names>
 			</db:auto-generated-keys-column-names>
 		</db:insert>
-		<db:stored-procedure doc:name="Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" />
 	</flow>
 </mule>
