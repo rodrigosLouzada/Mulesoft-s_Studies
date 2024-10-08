@@ -35,4 +35,5 @@ type register_covid_case_payload_meta_data = {|
       </types:input-event>
     </types:processor-declaration>
   </types:enrichment>
+  <types:enrichment select="#9644c2cc-f8f1-497d-acb4-39230b5da7b8"/>
 </types:mule>
