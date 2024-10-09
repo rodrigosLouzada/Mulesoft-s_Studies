@@ -76,7 +76,7 @@ SET
     update_date = TO_DATE(:update_date, 'YYYY-MM-DD'),
     create_by = :create_by,
     update_by = :update_by
-WHERE case_id = :case_id;
+WHERE case_id = :case_id
 ]]></db:sql>
 			<db:input-parameters ><![CDATA[#[vars.covidCasePayload]]]></db:input-parameters>
 		</db:update>
