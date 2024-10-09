@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-covid-case-by-national-idFlow" doc:id="c0764202-28bd-4e7c-aca0-379cf83e02d9" >
+		<http:listener doc:name="Listener" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" config-ref="HTTP_Listener_config" allowedMethods="GET" path="v1/cases/{nationalID}"/>
+		<ee:transform doc:name="Set CorrelationId and TransactionId" doc:id="68c76499-5f22-4bf0-a147-2e0bcaf24cb3" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="transactionId" ><![CDATA[attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
+				<ee:set-variable variableName="correlationId" ><![CDATA[attributes.headers.'x-correlation-id' default payload.covidCase.caseIDattributes.headers.'x-correlation-id' default payload.covidCase.caseID]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Start Log" doc:id="4130909e-b249-46db-a0f9-ce836ddd93ee" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload]'/>
+		<set-variable value="#[attributes.uriParams.nationalID]" doc:name="Set Variable" doc:id="36600520-14ed-4903-b20f-3e8736137b91" variableName="nationalID"/>
+	</flow>
+</mule>
