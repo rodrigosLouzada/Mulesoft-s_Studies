@@ -25,7 +25,7 @@ attributes.headers.'x-correlation-id' default payload.covidCase.caseID]]></ee:se
 		<logger level="INFO" doc:name="Start Log" doc:id="4130909e-b249-46db-a0f9-ce836ddd93ee" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload]'/>
 		<set-variable value="#[attributes.uriParams.nationalID]" doc:name="Set nationalID" doc:id="36600520-14ed-4903-b20f-3e8736137b91" variableName="nationalID"/>
 		<db:select doc:name="Select Case by NationalID" doc:id="5556692f-f609-4d5a-b6b1-5d81924c078a" config-ref="Database_Config_UHUB_1">
-			<db:sql ><![CDATA[select case_id, source, case_type, first_name, last_name, phone, email, date_of_birth national_id, street_address, city, state, postal, country, create_date, update_date from cvd_case_master where national_id = :national_id ]]></db:sql>
+			<db:sql ><![CDATA[select case_id, source, case_type, first_name, last_name, phone, email, date_of_birth, national_id, street_address, city, state, postal, country, create_date, update_date from cvd_case_master where national_id = :national_id ]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{
 	national_id: vars.nationalID
 }]]]></db:input-parameters>
@@ -45,9 +45,9 @@ payload map (covidCase, indexOfCovidCase) -> {
 	lastName: covidCase.last_name,
 	phone: covidCase.phone,
 	email: covidCase.email,
-	dateOfBirth: if (covidCase.date_of_birth != null) 
+	dateOfBirth:  
         covidCase.date_of_birth as String {format: "yyyy-MM-dd"} 
-        else null ,
+         ,
 	nationalID: covidCase.national_id,
 	nationalIDType: covidCase.national_id_type,
 	address: {
@@ -57,12 +57,12 @@ payload map (covidCase, indexOfCovidCase) -> {
 		postal: covidCase.postal,
 		country: covidCase.country,
 	},
-	createDate: if (covidCase.create_date != null) 
+	createDate: 
         covidCase.create_date as String {format: "yyyy-MM-dd"} 
-        else null ,
-	updateDate: if (covidCase.update_date != null) 
+         ,
+	updateDate: 
         covidCase.update_date as String {format: "yyyy-MM-dd"} 
-        else null ,
+         ,
 	
 }]]></ee:set-payload>
 					</ee:message>
@@ -72,7 +72,7 @@ payload map (covidCase, indexOfCovidCase) -> {
 				<ee:transform doc:name="Set Not Found Response" doc:id="193fb240-751a-4578-948f-a389ed28a954" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 {
 	"code": 404,
