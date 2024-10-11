@@ -45,7 +45,9 @@ payload map (covidCase, indexOfCovidCase) -> {
 	lastName: covidCase.last_name,
 	phone: covidCase.phone,
 	email: covidCase.email,
-	dateOfBirth: covidCase.date_of_birth ,
+	dateOfBirth: if (covidCase.date_of_birth != null) 
+        covidCase.date_of_birth as String {format: "yyyy-MM-dd"} 
+        else null ,
 	nationalID: covidCase.national_id,
 	nationalIDType: covidCase.national_id_type,
 	address: {
@@ -55,8 +57,12 @@ payload map (covidCase, indexOfCovidCase) -> {
 		postal: covidCase.postal,
 		country: covidCase.country,
 	},
-	createDate: covidCase.create_date ,
-	updateDate: covidCase.update_date ,
+	createDate: if (covidCase.create_date != null) 
+        covidCase.create_date as String {format: "yyyy-MM-dd"} 
+        else null ,
+	updateDate: if (covidCase.update_date != null) 
+        covidCase.update_date as String {format: "yyyy-MM-dd"} 
+        else null ,
 	
 }]]></ee:set-payload>
 					</ee:message>
