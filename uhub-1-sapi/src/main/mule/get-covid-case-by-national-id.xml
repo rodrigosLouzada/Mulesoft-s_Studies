@@ -12,14 +12,20 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			<ee:message >
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="transactionId" ><![CDATA[attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
-				<ee:set-variable variableName="correlationId" ><![CDATA[attributes.headers.'x-correlation-id' default payload.covidCase.caseIDattributes.headers.'x-correlation-id' default payload.covidCase.caseID]]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
+				<ee:set-variable variableName="correlationId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.'x-correlation-id' default payload.covidCase.caseID]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Start Log" doc:id="4130909e-b249-46db-a0f9-ce836ddd93ee" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload]'/>
 		<set-variable value="#[attributes.uriParams.nationalID]" doc:name="Set nationalID" doc:id="36600520-14ed-4903-b20f-3e8736137b91" variableName="nationalID"/>
 		<db:select doc:name="Select Case by NationalID" doc:id="5556692f-f609-4d5a-b6b1-5d81924c078a" config-ref="Database_Config_UHUB_1">
-			<db:sql ><![CDATA[select case_id, source, case_type, first_name, last_name, phone, email, date_of_birthm national_id, street_address, city, state, postal, country, create_date, update_date from cvd_case_master where national_id = :national_id ]]></db:sql>
+			<db:sql ><![CDATA[select case_id, source, case_type, first_name, last_name, phone, email, date_of_birth national_id, street_address, city, state, postal, country, create_date, update_date from cvd_case_master where national_id = :national_id ]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{
 	national_id: vars.nationalID
 }]]]></db:input-parameters>
@@ -29,7 +35,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 				<ee:transform doc:name="Set Success Response" doc:id="f050bd7d-bb3d-486a-ba38-7b4b3b2c05dd" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
+output application/json skipNullOn="everywhere"
 ---
 payload map (covidCase, indexOfCovidCase) -> {
 	caseID : covidCase.case_id,
@@ -39,7 +45,7 @@ payload map (covidCase, indexOfCovidCase) -> {
 	lastName: covidCase.last_name,
 	phone: covidCase.phone,
 	email: covidCase.email,
-	dateOfBirth: covidCase.date_of_birth as String {format: "yyyy-MM-dd"},
+	dateOfBirth: covidCase.date_of_birth ,
 	nationalID: covidCase.national_id,
 	nationalIDType: covidCase.national_id_type,
 	address: {
@@ -49,8 +55,8 @@ payload map (covidCase, indexOfCovidCase) -> {
 		postal: covidCase.postal,
 		country: covidCase.country,
 	},
-	createDate: covidCase.create_date as String {format: "yyyy-MM-dd"},
-	updateDate: covidCase.update_date as String {format: "yyyy-MM-dd"},
+	createDate: covidCase.create_date ,
+	updateDate: covidCase.update_date ,
 	
 }]]></ee:set-payload>
 					</ee:message>
