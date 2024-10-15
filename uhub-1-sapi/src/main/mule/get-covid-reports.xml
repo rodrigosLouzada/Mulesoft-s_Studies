@@ -35,7 +35,7 @@ if (!isEmpty(attributes.queryParams.state))
     ++ upper(attributes.queryParams.state) 
     ++ "' group by case_type, state"
 else 
-    "select count(*) as count, case_type, state from cvd_case_master group by case_type"
+    "select count(*) as count, case_type, state from cvd_case_master group by case_type, state"
 ]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>

@@ -14,11 +14,20 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<db:pooling-profile />
 		</db:oracle-connection>
 	</db:config>
-	<flow name="register-covid-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
-		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config" path="v1/cases">
+	<flow name="register-covid-validation-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
+		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config" path="v1/cases-validation">
 			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
 		</http:listener>
-		<logger level="INFO" doc:name="Start Log" doc:id="501dd587-5a2b-4c33-979c-8b6519470963" message="started log covid case flow : #[payload]"/>
+		<ee:transform doc:name="Set transactionId and correlationId" doc:id="42f6cca0-7d39-4039-b33b-200bc7218bd0" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputPayload" ><![CDATA[payload]]></ee:set-variable>
+				<ee:set-variable variableName="correlationId" ><![CDATA[attributes.headers.'x-correlation-id' default ""]]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Start Log" doc:id="501dd587-5a2b-4c33-979c-8b6519470963" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload]'/>
 		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="a191d2ab-6f0e-4202-9c81-dda36dd7fcef" >
 			<ee:message >
 			</ee:message>
@@ -92,7 +101,7 @@ output application/json
 		</ee:transform>
 		<logger level="INFO" doc:name="END LOG" doc:id="9251a3d7-cf49-4f63-b88d-e03d14aadcf0" message="COMPLETED REGISTER COVID CASE FLOW: #[payload]"/>
 	</flow>
-	<flow name="register-covid-caseFlow1" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
+	<flow name="register-covid-validation-caseFlow1" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
 		<logger level="INFO" doc:name="Logger" doc:id="a1af8b5e-83b1-4857-8d6c-c31dcb8a3362" />
 		<db:select doc:name="Select CASE_ID" doc:id="d4344268-768a-4637-9a49-5c0b4a0a5689" config-ref="Database_Config_UHUB_1">
 			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :nationalID
