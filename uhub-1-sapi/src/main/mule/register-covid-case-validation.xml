@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1950f41c-65e1-44b4-94e0-8de3785e0e0a" basePath="covid" >
 		<http:listener-connection host="0.0.0.0" port="8098" />
 	</http:listener-config>
@@ -28,6 +29,12 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Start Log" doc:id="501dd587-5a2b-4c33-979c-8b6519470963" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload]'/>
+		<validation:all doc:name="All" doc:id="f40f0b5e-e848-43d7-a940-1985135fac3f" >
+			<validation:is-not-null doc:name="Is not null" doc:id="4496ba1d-4985-4300-9505-806269a7680b" value="#[vars.inputPayload.source]"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="958cf06c-6bdb-4e70-94bf-997f39ffd77f" />
+			<validation:is-not-null doc:name="Is not null" doc:id="b371c688-c37b-4d19-86bd-e7f101025b4f" />
+			<validation:is-null doc:name="Is null" doc:id="c81735be-7988-4221-9185-cbc0f36ccf2b" />
+		</validation:all>
 		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="a191d2ab-6f0e-4202-9c81-dda36dd7fcef" >
 			<ee:message >
 			</ee:message>
