@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="get-covid-reportsFlow" doc:id="dc962b8e-0d31-4cbc-b962-49bcb4adfb10" >
-		<http:listener doc:name="Listener" doc:id="c0ac8c8b-d87e-469e-a2a0-9a530faa1808" config-ref="HTTP_Listener_config" path="/v1/reports/" allowedMethods="GET"/>
+		<http:listener doc:name="Listener" doc:id="c0ac8c8b-d87e-469e-a2a0-9a530faa1808" config-ref="HTTP_Listener_config_Validation" path="/v1/reports/" allowedMethods="GET"/>
 		<ee:transform doc:name="Set CorrelationId and TransactionId" doc:id="48a1b7b5-de60-44e4-8353-1706d56ddf0d" >
 			<ee:message >
 			</ee:message>
@@ -39,7 +39,7 @@ else
 ]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:select doc:name="Select case Reports" doc:id="f535a616-e13a-44e0-b4f6-ed79c7da0040" config-ref="Database_Config_UHUB_1">
+		<db:select doc:name="Select case Reports" doc:id="f535a616-e13a-44e0-b4f6-ed79c7da0040" config-ref="Database_Config_UHUB_Validation">
 			<db:sql ><![CDATA[#["$(vars.reportsDynamicQuery)"]]]></db:sql>
 		</db:select>
 		<ee:transform doc:name="Prepare Reponse" doc:id="50d72e5d-afe3-4e64-81f3-99ed5e25d215" >

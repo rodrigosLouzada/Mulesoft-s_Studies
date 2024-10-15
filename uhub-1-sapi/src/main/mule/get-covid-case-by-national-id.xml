@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="get-covid-case-by-national-idFlow" doc:id="c0764202-28bd-4e7c-aca0-379cf83e02d9" >
-		<http:listener doc:name="Listener" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" config-ref="HTTP_Listener_config" allowedMethods="GET" path="v1/cases/{nationalID}"/>
+		<http:listener doc:name="Listener" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" config-ref="HTTP_Listener_config_Validation" allowedMethods="GET" path="v1/cases/{nationalID}"/>
 		<ee:transform doc:name="Set CorrelationId and TransactionId" doc:id="68c76499-5f22-4bf0-a147-2e0bcaf24cb3" >
 			<ee:message >
 			</ee:message>
@@ -24,7 +24,7 @@ attributes.headers.'x-correlation-id' default payload.covidCase.caseID]]></ee:se
 		</ee:transform>
 		<logger level="INFO" doc:name="Start Log" doc:id="4130909e-b249-46db-a0f9-ce836ddd93ee" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload]'/>
 		<set-variable value="#[attributes.uriParams.nationalID]" doc:name="Set nationalID" doc:id="36600520-14ed-4903-b20f-3e8736137b91" variableName="nationalID"/>
-		<db:select doc:name="Select Case by NationalID" doc:id="5556692f-f609-4d5a-b6b1-5d81924c078a" config-ref="Database_Config_UHUB_1">
+		<db:select doc:name="Select Case by NationalID" doc:id="5556692f-f609-4d5a-b6b1-5d81924c078a" config-ref="Database_Config_UHUB_Validation">
 			<db:sql ><![CDATA[select case_id, source, case_type, first_name, last_name, phone, email, date_of_birth, national_id, street_address, city, state, postal, country, create_date, update_date from cvd_case_master where national_id = :national_id ]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{
 	national_id: vars.nationalID

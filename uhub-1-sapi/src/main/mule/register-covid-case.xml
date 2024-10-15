@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</db:oracle-connection>
 	</db:config>
 	<flow name="register-covid-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
-		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config" path="v1/cases">
+		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config" path="v1/cases" allowedMethods="POST">
 			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
 		</http:listener>
 		<logger level="INFO" doc:name="Start Log" doc:id="501dd587-5a2b-4c33-979c-8b6519470963" message="started log covid case flow : #[payload]"/>
@@ -50,7 +50,7 @@ var owner = "UHIS"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_1">
+		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_Validation">
 			<db:sql><![CDATA[{call insert_covid_master(:source, 
                           :case_type, 
                           :first_name, 
@@ -94,14 +94,14 @@ output application/json
 	</flow>
 	<flow name="register-covid-caseFlow1" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
 		<logger level="INFO" doc:name="Logger" doc:id="a1af8b5e-83b1-4857-8d6c-c31dcb8a3362" />
-		<db:select doc:name="Select CASE_ID" doc:id="d4344268-768a-4637-9a49-5c0b4a0a5689" config-ref="Database_Config_UHUB_1">
+		<db:select doc:name="Select CASE_ID" doc:id="d4344268-768a-4637-9a49-5c0b4a0a5689" config-ref="Database_Config_UHUB_Validation">
 			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :nationalID
 ]]></db:sql>
 			<db:input-parameters><![CDATA[#[{
 	nationalID: vars.covidPayload.national_id
 }]]]></db:input-parameters>
 		</db:select>
-		<db:insert doc:name="Insert covid case master" doc:id="548d9b0e-361c-40d8-b072-1c5c04e96fa3" config-ref="Database_Config_UHUB_1">
+		<db:insert doc:name="Insert covid case master" doc:id="548d9b0e-361c-40d8-b072-1c5c04e96fa3" config-ref="Database_Config_UHUB_Validation">
 			<db:sql><![CDATA[insert into cvd_case_master 
     (source, 
      case_type, 

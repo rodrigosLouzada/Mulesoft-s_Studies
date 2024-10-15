@@ -7,16 +7,16 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1950f41c-65e1-44b4-94e0-8de3785e0e0a" basePath="covid" >
-		<http:listener-connection host="0.0.0.0" port="8098" />
+	<http:listener-config name="HTTP_Listener_config_Validation" doc:name="HTTP Listener config" doc:id="1950f41c-65e1-44b4-94e0-8de3785e0e0a" basePath="covid" >
+		<http:listener-connection host="0.0.0.0" port="8099" />
 	</http:listener-config>
-	<db:config name="Database_Config_UHUB_1" doc:name="Database Config" doc:id="6fdd05c1-6794-48e5-a3d5-8f0b495e0430" >
+	<db:config name="Database_Config_UHUB_Validation" doc:name="Database Config" doc:id="6fdd05c1-6794-48e5-a3d5-8f0b495e0430" >
 		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" >
 			<db:pooling-profile />
 		</db:oracle-connection>
 	</db:config>
 	<flow name="register-covid-validation-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
-		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config" path="v1/cases-validation">
+		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_Validation" path="v1/cases-validation" allowedMethods="POST">
 			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
 		</http:listener>
 		<ee:transform doc:name="Set transactionId and correlationId" doc:id="42f6cca0-7d39-4039-b33b-200bc7218bd0" >
@@ -31,9 +31,18 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 		<logger level="INFO" doc:name="Start Log" doc:id="501dd587-5a2b-4c33-979c-8b6519470963" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload]'/>
 		<validation:all doc:name="All" doc:id="f40f0b5e-e848-43d7-a940-1985135fac3f" >
 			<validation:is-not-null doc:name="Is not null" doc:id="4496ba1d-4985-4300-9505-806269a7680b" value="#[vars.inputPayload.source]"/>
-			<validation:is-not-null doc:name="Is not null" doc:id="958cf06c-6bdb-4e70-94bf-997f39ffd77f" />
-			<validation:is-not-null doc:name="Is not null" doc:id="b371c688-c37b-4d19-86bd-e7f101025b4f" />
-			<validation:is-null doc:name="Is null" doc:id="c81735be-7988-4221-9185-cbc0f36ccf2b" />
+			<validation:is-not-null doc:name="Is not null" doc:id="958cf06c-6bdb-4e70-94bf-997f39ffd77f" value="#[vars.inputPayload.caseType]"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="b371c688-c37b-4d19-86bd-e7f101025b4f" value="#[vars.inputPayload.firstName]"/>
+			<validation:is-null doc:name="Is null" doc:id="c81735be-7988-4221-9185-cbc0f36ccf2b" value="#[vars.inputPayload.lastName]"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="2ef3e368-0724-4e1d-be47-1f53e1509ad6" value="#[vars.inputPayload.phone]"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="251f2325-cbcf-4bd4-bcd7-4810e56fff90" value="#[vars.inputPayload.dateOfBirth]" message='"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"'/>
+			<validation:is-not-null doc:name="Is not null" doc:id="9cc330aa-c8a0-4ee4-8ada-57a26a09405f" value="vars.inputPayload.nationalID"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="88dafdb0-2eb6-43d3-8b27-6a8c372baa85" value="vars.inputPayload.nationalIDType"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="0348b053-f4ce-4382-8ddd-6743a9d448b0" value="vars.inputPayload.source.address.streetAddress"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="037892fa-72f5-40ec-aabf-c1e3244db70b" value="vars.inputPayload.source.address.city"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="7d5e32ac-09f1-4efd-80d0-3b3b33307c83" value="vars.inputPayload.source.address.state"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="e5d52c10-abfa-41de-b720-f112ffd64e3f" value="vars.inputPayload.source.address.postal"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="b6d37c33-14e0-4e76-9eef-2f8e0ea0d06d" value="vars.inputPayload.source.address.country"/>
 		</validation:all>
 		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="a191d2ab-6f0e-4202-9c81-dda36dd7fcef" >
 			<ee:message >
@@ -66,7 +75,7 @@ var owner = "UHIS"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_1">
+		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_Validation">
 			<db:sql><![CDATA[{call insert_covid_master(:source, 
                           :case_type, 
                           :first_name, 
@@ -110,14 +119,14 @@ output application/json
 	</flow>
 	<flow name="register-covid-validation-caseFlow1" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
 		<logger level="INFO" doc:name="Logger" doc:id="a1af8b5e-83b1-4857-8d6c-c31dcb8a3362" />
-		<db:select doc:name="Select CASE_ID" doc:id="d4344268-768a-4637-9a49-5c0b4a0a5689" config-ref="Database_Config_UHUB_1">
+		<db:select doc:name="Select CASE_ID" doc:id="d4344268-768a-4637-9a49-5c0b4a0a5689" config-ref="Database_Config_UHUB_Validation">
 			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :nationalID
 ]]></db:sql>
 			<db:input-parameters><![CDATA[#[{
 	nationalID: vars.covidPayload.national_id
 }]]]></db:input-parameters>
 		</db:select>
-		<db:insert doc:name="Insert covid case master" doc:id="548d9b0e-361c-40d8-b072-1c5c04e96fa3" config-ref="Database_Config_UHUB_1">
+		<db:insert doc:name="Insert covid case master" doc:id="548d9b0e-361c-40d8-b072-1c5c04e96fa3" config-ref="Database_Config_UHUB_Validation">
 			<db:sql><![CDATA[insert into cvd_case_master 
     (source, 
      case_type, 
