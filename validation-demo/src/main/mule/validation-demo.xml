@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config_Vali" doc:name="HTTP Listener config" doc:id="cb4aab81-9d9d-469a-9fa7-bd328721220e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
 	<flow name="validation-demoFlow" doc:id="83ea6258-0515-4bc7-9bcc-0eea5911955b" >
-		<http:listener doc:name="Listener" doc:id="89efd27a-7c00-4d43-93e0-de1b51b18a45" />
-		<logger level="INFO" doc:name="Logger" doc:id="7758eb34-2a2a-4f8d-a327-de578b82d5b8" />
-		<logger level="INFO" doc:name="Logger" doc:id="14af5441-f0e6-4573-8c71-e0145843a513" />
+		<http:listener doc:name="Listener" doc:id="89efd27a-7c00-4d43-93e0-de1b51b18a45" config-ref="HTTP_Listener_config_Vali" path="validation-demo" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7758eb34-2a2a-4f8d-a327-de578b82d5b8" message="#[payload]"/>
+		<validation:all doc:name="All" doc:id="a8b42777-3ce7-4e51-ac84-d028bf2d7b05" >
+			<validation:is-not-null doc:name="Is not null" doc:id="58b87652-2fed-44db-bc61-7eebbd5cf250" value="#[payload.source]" message='#["source field is required"]' />
+			<validation:is-email doc:name="Is email" doc:id="e81fd3fb-0d3e-43b7-b6b1-a49b3c443c43" email="#[payload.email]" message='#["invalid email"]' />
+			<validation:matches-regex doc:name="Matches regex" doc:id="b513ed77-1d8d-4b32-b4de-02c2c3e55eaf" value="#[payload.dateOfBirth]" regex='#["[1-9][0-9][0-9]{2}-([0][1-9]|[1][0-2])-([1-2][0-9]|[0][1-9]|[3][0-1])"]' message='#["invalid date format for date of birth"]' />
+		</validation:all>
+		<logger level="INFO" doc:name="Logger" doc:id="14af5441-f0e6-4573-8c71-e0145843a513" message='#["completed the Flow"]'/>
 	</flow>
 </mule>
