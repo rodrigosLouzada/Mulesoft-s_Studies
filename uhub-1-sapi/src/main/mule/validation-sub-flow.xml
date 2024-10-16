@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></mule>
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="covid-case-validations-sub-flow" doc:id="75bb001c-2375-4e2e-8e71-665f6a86d487" >
+		<validation:all doc:name="All" doc:id="f40f0b5e-e848-43d7-a940-1985135fac3f">
+			<validation:is-not-null doc:name="Is not null" doc:id="4496ba1d-4985-4300-9505-806269a7680b" value="#[vars.inputPayload.source]" message='#["aaaaaaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="958cf06c-6bdb-4e70-94bf-997f39ffd77f" value="#[vars.inputPayload.caseType]" message='#["aaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="b371c688-c37b-4d19-86bd-e7f101025b4f" value="#[vars.inputPayload.firstName]" message='#["aaaaaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="e9690ba0-7b47-41a4-b827-dfaf248074d9" value="#[vars.inputPayload.lastName]" message='#["last name required"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="2ef3e368-0724-4e1d-be47-1f53e1509ad6" value="#[vars.inputPayload.phone]" message='#["aaaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="251f2325-cbcf-4bd4-bcd7-4810e56fff90" value="#[vars.inputPayload.dateOfBirth]" message='"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"' />
+			<validation:is-not-null doc:name="Is not null" doc:id="9cc330aa-c8a0-4ee4-8ada-57a26a09405f" value="#[vars.inputPayload.nationalID]" message='#["required national ID"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="88dafdb0-2eb6-43d3-8b27-6a8c372baa85" value="#[vars.inputPayload.nationalIDType]" message='#["try another type"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="0348b053-f4ce-4382-8ddd-6743a9d448b0" value="#[vars.inputPayload.address.streetAddress]" message='#["aaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="037892fa-72f5-40ec-aabf-c1e3244db70b" value="#[vars.inputPayload.address.city]" message='#["aaaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="7d5e32ac-09f1-4efd-80d0-3b3b33307c83" value="#[vars.inputPayload.address.state]" message='#["aaaaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="e5d52c10-abfa-41de-b720-f112ffd64e3f" value="#[vars.inputPayload.address.postal]" message='#["aaaaaaaaaaaa"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="b6d37c33-14e0-4e76-9eef-2f8e0ea0d06d" value="#[vars.inputPayload.address.country]" message='#["aaaaaaaaaaaa"]' />
+		</validation:all>
+	</sub-flow>
+</mule>
