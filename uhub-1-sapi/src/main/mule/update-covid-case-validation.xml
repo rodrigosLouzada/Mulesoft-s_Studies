@@ -28,7 +28,23 @@ payload.covidCase]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Start Logger" doc:id="dc639870-5d5d-4a43-acc0-b2c08a0bdf4c" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Started update covid case flow", payload: #[payload.covidCase]'/>
-		<flow-ref doc:name="Flow Reference" doc:id="f7603486-52cb-481d-9c55-485bf2e3f9c9" name="update-covid-case-validationSub_Flow"/>
+		<validation:all doc:name="All" doc:id="8e0234f4-39dd-4655-aecc-afe8205160f6">
+			<validation:is-not-null doc:name="Is not null" doc:id="d71aa174-7e19-4da6-b87b-31f94faa704b" value="#[vars.inputPayload.caseID]" message='#[" - Esse campo caseID não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="e104fba6-c389-4351-9983-e858825d36c6" value="#[vars.inputPayload.source]" message='#[" - Esse campo source não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="7da093e1-ae04-4626-9683-1e4445795fba" value="#[vars.inputPayload.caseType]" message='#[" - Esse campo caseType não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="f2dff98c-d6a3-4296-a0d8-659207b4d3bd" value="#[vars.inputPayload.firstName]" message='#[" - Esse campo firstName não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="edd016a2-a22a-4969-ba72-9caf94d91f6b" value="#[vars.inputPayload.lastName]" message='#[" - Esse campo lastName não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="c57bbe4f-28aa-43fc-b602-d60ed9e5e277" value="#[vars.inputPayload.phone]" message='#[" - Esse campo phone não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="602dd425-3501-4925-9cb0-2d6c24288a01" value="#[vars.inputPayload.email]" message='#[" - Esse campo email não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="3c3c27dc-e924-4fef-867c-288c2250d478" value="#[vars.inputPayload.dateOfBirth]" message='#[" - Esse campo dateOfBirth não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="7f2203ee-bc0b-436a-b76b-9f2c9a1ce726" value="#[vars.inputPayload.nationalID]" message='#[" - Esse campo nationalID não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="1bc673d6-c883-4466-9a5a-ac44235f64f6" value="#[vars.inputPayload.nationalIDType]" message='#[" - Esse campo nationalIDType não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="1cad1f47-2b07-4c60-8c2b-eae51026ace9" value="#[vars.inputPayload.address.streetAddress]" message='#[" - Esse campo streetAddress não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="74f7a7ab-3eb1-48d3-b2f2-cb57d6efd2e2" value="#[vars.inputPayload.address.city]" message='#[" - Esse campo city não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="4539602c-5581-4c34-af69-519b5e5ff4df" value="#[vars.inputPayload.address.state]" message='#[" - Esse campo state não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="f3abb9f5-a8de-4842-8b49-bfe5be7743cd" value="#[vars.inputPayload.address.postal]" message='#[" - Esse campo postal não está correto."]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="4231842e-2ad4-4e58-8683-526e0d1b7a58" value="#[vars.inputPayload.address.country]" message='#[" - Esse campo country não está correto."]' />
+		</validation:all>
 		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="9644c2cc-f8f1-497d-acb4-39230b5da7b8" >
 			<ee:message >
 			</ee:message>
@@ -99,25 +115,4 @@ if (payload.affectedRows > 0){
 		</ee:transform>
 		<logger level="INFO" doc:name="End Log" doc:id="bf0d951a-258a-4bd9-bbb3-0f5a241ec1f3" message='transactionID: #[vars.transactionId], correlationId: #[vars.correlationId], message: "Completed update covid case flow", payload: #[payload]'/>
 	</flow>
-	<sub-flow name="update-covid-case-validationSub_Flow" doc:id="47b25516-a709-4650-acb0-c310c73d9ed3" >
-		<try doc:name="Try" doc:id="54b90683-3584-49e9-9646-afef98e7c290" >
-			<validation:all doc:name="All" doc:id="8e0234f4-39dd-4655-aecc-afe8205160f6">
-			<validation:is-not-null doc:name="Is not null" doc:id="d71aa174-7e19-4da6-b87b-31f94faa704b" value="#[vars.inputPayload.caseID]" message='#[" - Esse campo caseID não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="e104fba6-c389-4351-9983-e858825d36c6" value="#[vars.inputPayload.source]" message='#[" - Esse campo source não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="7da093e1-ae04-4626-9683-1e4445795fba" value="#[vars.inputPayload.caseType]" message='#[" - Esse campo caseType não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="f2dff98c-d6a3-4296-a0d8-659207b4d3bd" value="#[vars.inputPayload.firstName]" message='#[" - Esse campo firstName não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="edd016a2-a22a-4969-ba72-9caf94d91f6b" value="#[vars.inputPayload.lastName]" message='#[" - Esse campo lastName não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="c57bbe4f-28aa-43fc-b602-d60ed9e5e277" value="#[vars.inputPayload.phone]" message='#[" - Esse campo phone não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="602dd425-3501-4925-9cb0-2d6c24288a01" value="#[vars.inputPayload.email]" message='#[" - Esse campo email não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="3c3c27dc-e924-4fef-867c-288c2250d478" value="#[vars.inputPayload.dateOfBirth]" message='#[" - Esse campo dateOfBirth não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="7f2203ee-bc0b-436a-b76b-9f2c9a1ce726" value="#[vars.inputPayload.nationalID]" message='#[" - Esse campo nationalID não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="1bc673d6-c883-4466-9a5a-ac44235f64f6" value="#[vars.inputPayload.nationalIDType]" message='#[" - Esse campo nationalIDType não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="1cad1f47-2b07-4c60-8c2b-eae51026ace9" value="#[vars.inputPayload.address.streetAddress]" message='#[" - Esse campo streetAddress não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="74f7a7ab-3eb1-48d3-b2f2-cb57d6efd2e2" value="#[vars.inputPayload.address.city]" message='#[" - Esse campo city não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="4539602c-5581-4c34-af69-519b5e5ff4df" value="#[vars.inputPayload.address.state]" message='#[" - Esse campo state não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="f3abb9f5-a8de-4842-8b49-bfe5be7743cd" value="#[vars.inputPayload.address.postal]" message='#[" - Esse campo postal não está correto."]' />
-			<validation:is-not-null doc:name="Is not null" doc:id="4231842e-2ad4-4e58-8683-526e0d1b7a58" value="#[vars.inputPayload.address.country]" message='#[" - Esse campo country não está correto."]' />
-		</validation:all>
-		</try>
-	</sub-flow>
 </mule>
