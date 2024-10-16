@@ -7,8 +7,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
-	<http:listener-config name="HTTP_Listener_config_Validation" doc:name="HTTP Listener config" doc:id="1950f41c-65e1-44b4-94e0-8de3785e0e0a" basePath="covid" >
-		<http:listener-connection host="0.0.0.0" port="8099" />
+	<http:listener-config name="HTTP_Listener_config_Validation" doc:name="HTTP Listener config" doc:id="251f2325-cbcf-4bd4-bcd7-4810e56fff90" basePath="covid">
+		<http:listener-connection host="0.0.0.0" port="8097" />
 	</http:listener-config>
 	<db:config name="Database_Config_UHUB_Validation" doc:name="Database Config" doc:id="6fdd05c1-6794-48e5-a3d5-8f0b495e0430" >
 		<db:oracle-connection host="localhost" user="system" password="@dinho32" instance="XE" >
@@ -36,9 +36,9 @@ payload]]></ee:set-variable>
 		<validation:all doc:name="All" doc:id="f40f0b5e-e848-43d7-a940-1985135fac3f" >
 			<validation:is-not-null doc:name="Is not null" doc:id="4496ba1d-4985-4300-9505-806269a7680b" value="#[vars.inputPayload.source]" message='#["aaaaaaaaaaaaaa"]'/>
 			<validation:is-not-null doc:name="Is not null" doc:id="958cf06c-6bdb-4e70-94bf-997f39ffd77f" value="#[vars.inputPayload.caseType]" message='#["aaaaaaaaaa"]'/>
-			<validation:is-not-null doc:name="Is not null" doc:id="b371c688-c37b-4d19-86bd-e7f101025b4f" value="#[vars.inputPayload.firstName]"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="b371c688-c37b-4d19-86bd-e7f101025b4f" value="#[vars.inputPayload.firstName]" message='#["aaaaaaaaaaaaa"]'/>
 			<validation:is-not-null doc:name="Is not null" doc:id="e9690ba0-7b47-41a4-b827-dfaf248074d9" value="#[vars.inputPayload.lastName]" message='#["last name required"]'/>
-			<validation:is-not-null doc:name="Is not null" doc:id="2ef3e368-0724-4e1d-be47-1f53e1509ad6" value="#[vars.inputPayload.phone]"/>
+			<validation:is-not-null doc:name="Is not null" doc:id="2ef3e368-0724-4e1d-be47-1f53e1509ad6" value="#[vars.inputPayload.phone]" message='#["aaaaaaaaaaa"]'/>
 			<validation:is-not-null doc:name="Is not null" doc:id="251f2325-cbcf-4bd4-bcd7-4810e56fff90" value="#[vars.inputPayload.dateOfBirth]" message='"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"'/>
 			<validation:is-not-null doc:name="Is not null" doc:id="9cc330aa-c8a0-4ee4-8ada-57a26a09405f" value="#[vars.inputPayload.nationalID]" message='#["required national ID"]'/>
 			<validation:is-not-null doc:name="Is not null" doc:id="88dafdb0-2eb6-43d3-8b27-6a8c372baa85" value="#[vars.inputPayload.nationalIDType]" message='#["try another type"]'/>
