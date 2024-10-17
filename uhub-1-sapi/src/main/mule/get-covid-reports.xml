@@ -39,7 +39,7 @@ else
 ]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:select doc:name="Select case Reports" doc:id="f535a616-e13a-44e0-b4f6-ed79c7da0040" config-ref="Database_Config_UHUB_Validation">
+		<db:select doc:name="Select case Reports" doc:id="f535a616-e13a-44e0-b4f6-ed79c7da0040" config-ref="Database_Config_UHUB_1">
 			<db:sql ><![CDATA[#["$(vars.reportsDynamicQuery)"]]]></db:sql>
 		</db:select>
 		<ee:transform doc:name="Prepare Reponse" doc:id="50d72e5d-afe3-4e64-81f3-99ed5e25d215" >

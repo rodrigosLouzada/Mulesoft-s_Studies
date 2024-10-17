@@ -63,7 +63,7 @@ output application/java
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:update doc:name="Update Covid Case Master" doc:id="5f280fd9-6d78-46f1-bef9-de2b4938edaa" config-ref="Database_Config_UHUB_Validation">
+		<db:update doc:name="Update Covid Case Master" doc:id="5f280fd9-6d78-46f1-bef9-de2b4938edaa" config-ref="Database_Config_UHUB_1">
 			<db:sql ><![CDATA[UPDATE cvd_case_master 
 SET 
     source = :source,
