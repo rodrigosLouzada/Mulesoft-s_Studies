@@ -14,6 +14,9 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 	<flow name="register-covid-validation-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
 		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_Validation" path="v1/cases-validation" allowedMethods="POST">
 			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
+			<http:error-response >
+				<http:body ><![CDATA[#[output text/plain --- error.errorMessage.payload.message[0]]]]></http:body>
+			</http:error-response>
 		</http:listener>
 		<ee:transform doc:name="Set transactionId and correlationId" doc:id="42f6cca0-7d39-4039-b33b-200bc7218bd0" >
 			<ee:message >
