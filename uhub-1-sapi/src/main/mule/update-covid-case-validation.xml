@@ -9,7 +9,11 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd">
 	<flow name="update-covid-case-validationFlow" doc:id="5fe8d219-e500-4c07-bd68-e3476c20ee5c" >
-		<http:listener doc:name="Listener" doc:id="f1287f12-832c-4a5b-932c-9cc45041768d" config-ref="HTTP_Listener_config_Validation" path="v1/cases-validation" allowedMethods="PUT"/>
+		<http:listener doc:name="Listener" doc:id="f1287f12-832c-4a5b-932c-9cc45041768d" config-ref="HTTP_Listener_config_Validation" path="v1/cases-validation" allowedMethods="PUT">
+			<http:error-response >
+				<http:body ><![CDATA[#[output text/plain --- error.errorMessage.payload[0].description]]]></http:body>
+			</http:error-response>
+		</http:listener>
 		<ee:transform doc:name="Set correlationId and TransactionId" doc:id="7d541fe5-8ac3-43dd-b0ad-944187774a60" >
 			<ee:message >
 			</ee:message>
