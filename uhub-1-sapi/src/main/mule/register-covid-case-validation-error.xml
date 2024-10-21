@@ -12,7 +12,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 		<http:listener-connection host="0.0.0.0" port="8095" />
 	</http:listener-config>
 	<flow name="register-covid-validation-error-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
-		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_error" path="v1/cases-validation-error" allowedMethods="POST">
+		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_Validation" path="v1/cases-validation-error" allowedMethods="POST">
 			<http:error-response>
 				<http:body ><![CDATA[#[payload]]]></http:body>
 			</http:error-response>
