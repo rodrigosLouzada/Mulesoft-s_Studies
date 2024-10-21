@@ -13,8 +13,10 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 	</http:listener-config>
 	<flow name="register-covid-validation-error-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
 		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_error" path="v1/cases-validation-error" allowedMethods="POST">
-			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]" />
-			<http:error-response >
+			<http:response >
+				<http:body ><![CDATA[#["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]]]></http:body>
+			</http:response>
+			<http:error-response>
 				<http:body ><![CDATA[#[payload]]]></http:body>
 			</http:error-response>
 		</http:listener>
@@ -107,12 +109,11 @@ output application/json
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="END LOG" doc:id="9251a3d7-cf49-4f63-b88d-e03d14aadcf0" message="COMPLETED REGISTER COVID CASE FLOW: #[payload]"/>
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e9ba34fe-afba-4949-abe8-53699ebfc0f3" type="JSON:SCHEMA_NOT_HONOURED">
-				<logger level="INFO" doc:name="Logger" doc:id="69e2b44e-5512-4808-a0e5-f959d6743590" message="#[error]"/>
-				<ee:transform doc:name="Transform Message" doc:id="992e5beb-20eb-46d9-a9df-9f225ed3b84f" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="43a52792-aae6-499a-a203-b8b0c24e28fa" type="JSON:SCHEMA_NOT_HONOURED">
+				<ee:transform doc:name="Transform Message" doc:id="992e5beb-20eb-46d9-a9df-9f225ed3b84f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -123,8 +124,11 @@ output application/json
    "transactionId": vars.transactionId
 }]]></ee:set-payload>
 					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="statusCode"><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
 				</ee:transform>
-			</on-error-propagate>
+			</on-error-continue>
 		</error-handler>
 	</flow>
 	<flow name="register-covid-validation-error-caseFlow-sub" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
