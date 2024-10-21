@@ -7,7 +7,12 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="get-covid-case-by-national-idFlow" doc:id="c0764202-28bd-4e7c-aca0-379cf83e02d9" >
-		<http:listener doc:name="Listener" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" config-ref="HTTP_Listener_config_error" allowedMethods="GET" path="v1/cases/{nationalID}"/>
+		<http:listener doc:name="Listener" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" config-ref="HTTP_Listener_config_error" allowedMethods="GET" path="v1/cases/{nationalID}">
+			<http:response statusCode="#[vars.statusCode]" />
+			<http:error-response statusCode="#[vars.statusCode]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
 		<ee:transform doc:name="Set CorrelationId and TransactionId" doc:id="68c76499-5f22-4bf0-a147-2e0bcaf24cb3" >
 			<ee:message >
 			</ee:message>
@@ -69,24 +74,71 @@ payload map (covidCase, indexOfCovidCase) -> {
 				</ee:transform>
 			</when>
 			<otherwise >
-				<ee:transform doc:name="Set Not Found Response" doc:id="193fb240-751a-4578-948f-a389ed28a954" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+				<raise-error doc:name="Raise CUSTOM:CASE_NOT_FOUND" doc:id="3ba53803-d6ed-4bf6-95fb-ab1620e4bdeb" type="CUSTOM:CASE_NOT_FOUND" description="The server has not found anything matching the Request-URI"/>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="09d5bf8b-2e90-4b69-ba71-f58f8ac6af01" type="CUSTOM:CASE_NOT_FOUND">
+				<ee:transform doc:name="Set Not Found Response" doc:id="193fb240-751a-4578-948f-a389ed28a954">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
 	"code": 404,
 	"message": "Resource Not Found",
-	"description": "the Server has not found, try again",
+	"description": error.description,
 	"dateTime": now() as String {format: "yyyy-MM-dd"},
 	"transactionId": vars.transactionId
 }]]></ee:set-payload>
 					</ee:message>
-					<ee:variables >
-						<ee:set-variable variableName="statusCode" ><![CDATA[400]]></ee:set-variable>
+					<ee:variables>
+						<ee:set-variable variableName="statusCode"><![CDATA[400]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</otherwise>
-		</choice>
+			</on-error-propagate>
+			
+			
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ecd63649-4360-48a6-afbe-74769d1e3302" type="DB:CONNECTIVITY">
+				<ee:transform doc:name="Service Unavailable Response" doc:id="320a9a1c-f9f4-43a1-a8ea-502915049898">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "code":503,
+   "message":"Service unavailable",
+   "description": "The (upstream) service is temporarily not available",
+   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+   "transactionId": vars.transactionId
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="statusCode"><![CDATA[503]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="49bf59a6-605a-4234-8953-a563f85e2391" type="ANY">
+				<ee:transform doc:name="Service Unavailable Response" doc:id="646cb8ba-aafa-47fc-9c93-0a0e964c2532" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "code":500,
+   "message":"Internal Server Error",
+   "description": "The server encountered an unexpected condition which prevented it from fulfilling the request",
+   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+   "transactionId": vars.transactionId
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			
+		</error-handler>
 	</flow>
 </mule>

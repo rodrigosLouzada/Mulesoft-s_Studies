@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
-	<http:listener-config name="HTTP_Listener_config_error" doc:name="HTTP Listener config" doc:id="39c8f0c0-ef5c-4630-986f-f1a55b5bc4f9" basePath="covid" >
+	<http:listener-config name="HTTP_Listener_config_error" doc:name="HTTP Listener config" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" basePath="covid">
 		<http:listener-connection host="0.0.0.0" port="8095" />
 	</http:listener-config>
 	<flow name="register-covid-validation-error-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
@@ -131,10 +131,12 @@ output application/json
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
+			
+			
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="CUSTOM:CONNECTION_FAILED">
-				<ee:transform doc:name="Service Unavailable Response" doc:id="e3e1c5d3-4601-466b-81f2-48a2725db9d3" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+				<ee:transform doc:name="Service Unavailable Response" doc:id="e3e1c5d3-4601-466b-81f2-48a2725db9d3">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -145,14 +147,14 @@ output application/json
    "transactionId": vars.transactionId
 }]]></ee:set-payload>
 					</ee:message>
-					<ee:variables >
-						<ee:set-variable variableName="statusCode" ><![CDATA[503]]></ee:set-variable>
+					<ee:variables>
+						<ee:set-variable variableName="statusCode"><![CDATA[503]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
 			
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="32740e88-59f3-4230-8a9c-21d52a662096" type="ANY">
-				<ee:transform doc:name="Service Unavailable Response" doc:id="5d495a84-878b-430c-a43f-09daf1ba8049" >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d1f76c82-8063-487f-a288-428aa9df1d3b" type="ANY">
+				<ee:transform doc:name="Service Unavailable Response" doc:id="b26fd43c-d257-4ea8-9ebf-ff6c323d64d3" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
