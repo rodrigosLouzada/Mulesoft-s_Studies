@@ -66,6 +66,7 @@ var owner = "UHIS"
 			</ee:variables>
 		</ee:transform>
 		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_1">
+			<error-mapping sourceType="DB:CONNECTIVITY" targetType="CUSTOM:CONNECTION_FAILED" />
 			<db:sql><![CDATA[{call insert_covid_master(:source, 
                           :case_type, 
                           :first_name, 
@@ -91,7 +92,9 @@ var owner = "UHIS"
 				<db:output-parameter key="case_id" type="INTEGER" />
 			</db:output-parameters>
 		</db:stored-procedure>
-		<http:request method="GET" doc:name="Request" doc:id="48d11db9-3746-453c-b484-b17f263f09a1" url="http://random-service.com/sample"/>
+		<http:request method="GET" doc:name="Request" doc:id="48d11db9-3746-453c-b484-b17f263f09a1" url="http://random-service.com/sample">
+			<error-mapping sourceType="HTTP:CONNECTIVITY" targetType="CUSTOM:CONNECTION_FAILED" />
+		</http:request>
 		<ee:transform doc:name="Transform Message" doc:id="6508afc7-c2f5-45b1-8cbf-9ddca1773de1" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -128,7 +131,7 @@ output application/json
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="DB:CONNECTIVITY, HTTP:CONNECTIVITY">
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="CUSTOM:CONNECTION_FAILED">
 				<ee:transform doc:name="Service Unavailable Response" doc:id="e3e1c5d3-4601-466b-81f2-48a2725db9d3" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
