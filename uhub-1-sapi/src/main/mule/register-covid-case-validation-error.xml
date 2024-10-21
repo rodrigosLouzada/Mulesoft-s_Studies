@@ -91,6 +91,7 @@ var owner = "UHIS"
 				<db:output-parameter key="case_id" type="INTEGER" />
 			</db:output-parameters>
 		</db:stored-procedure>
+		<http:request method="GET" doc:name="Request" doc:id="48d11db9-3746-453c-b484-b17f263f09a1" url="http://random-service.com/sample"/>
 		<ee:transform doc:name="Transform Message" doc:id="6508afc7-c2f5-45b1-8cbf-9ddca1773de1" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -107,6 +108,7 @@ output application/json
 		</ee:transform>
 		<logger level="INFO" doc:name="END LOG" doc:id="9251a3d7-cf49-4f63-b88d-e03d14aadcf0" message="COMPLETED REGISTER COVID CASE FLOW: #[payload]"/>
 		<error-handler>
+			
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="75dff0b6-3b8f-4abf-8826-1a21a4a34abd" type="JSON:SCHEMA_NOT_HONOURED">
 				<ee:transform doc:name="Transform Message" doc:id="992e5beb-20eb-46d9-a9df-9f225ed3b84f">
 					<ee:message>
@@ -126,7 +128,7 @@ output application/json
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="DB:CONNECTIVITY">
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="DB:CONNECTIVITY, HTTP:CONNECTIVITY">
 				<ee:transform doc:name="Service Unavailable Response" doc:id="e3e1c5d3-4601-466b-81f2-48a2725db9d3" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
@@ -145,8 +147,9 @@ output application/json
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fd0e5d7b-4080-469a-9b7a-b7a137a7a37d" type="ANY">
-				<ee:transform doc:name="Service Unavailable Response" doc:id="bc3b0239-d876-45e8-8bb4-fa9c5c415cd2" >
+			
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="32740e88-59f3-4230-8a9c-21d52a662096" type="ANY">
+				<ee:transform doc:name="Service Unavailable Response" doc:id="5d495a84-878b-430c-a43f-09daf1ba8049" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -164,6 +167,7 @@ output application/json
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
+			
 		</error-handler>
 	</flow>
 	<flow name="register-covid-validation-error-caseFlow-sub" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
