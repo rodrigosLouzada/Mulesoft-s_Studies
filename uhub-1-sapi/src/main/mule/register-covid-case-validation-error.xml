@@ -13,11 +13,8 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 	</http:listener-config>
 	<flow name="register-covid-validation-error-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
 		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_error" path="v1/cases-validation-error" allowedMethods="POST">
-			<http:response >
-				<http:body ><![CDATA[#["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]]]></http:body>
-			</http:response>
 			<http:error-response>
-				<http:body ><![CDATA[#["bbbbbbbb"]]]></http:body>
+				<http:body ><![CDATA[#[payload]]]></http:body>
 			</http:error-response>
 		</http:listener>
 		<ee:transform doc:name="Set transactionId and correlationId" doc:id="42f6cca0-7d39-4039-b33b-200bc7218bd0" >
@@ -126,6 +123,44 @@ output application/json
 					</ee:message>
 					<ee:variables>
 						<ee:set-variable variableName="statusCode"><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="DB:CONNECTIVITY">
+				<ee:transform doc:name="Service Unavailable Response" doc:id="e3e1c5d3-4601-466b-81f2-48a2725db9d3" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "code":503,
+   "message":"Service unavailable",
+   "description": "The (upstream) service is temporarily not available",
+   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+   "transactionId": vars.transactionId
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="statusCode" ><![CDATA[503]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fd0e5d7b-4080-469a-9b7a-b7a137a7a37d" type="ANY">
+				<ee:transform doc:name="Service Unavailable Response" doc:id="bc3b0239-d876-45e8-8bb4-fa9c5c415cd2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "code":500,
+   "message":"Internal Server Error",
+   "description": "The server encountered an unexpected condition which prevented it from fulfilling the request",
+   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+   "transactionId": vars.transactionId
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>

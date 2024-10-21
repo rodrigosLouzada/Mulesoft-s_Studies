@@ -18,7 +18,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	</http:listener-config>
 	<db:config name="Database_Config_UHUB_1"
 		doc:name="Database Config"
-		doc:id="f0306819-15fa-4683-a89c-cc85bfc2e229">
+		doc:id="9f9def76-3165-494d-af03-fd5123b66955">
 		<db:oracle-connection host="localhost"
 			user="system" password="@dinho32" instance="XE">
 			<db:pooling-profile />
