@@ -34,6 +34,10 @@
 							<groupId>com.mycompany</groupId>
 							<artifactId>ojdbc11</artifactId>
 						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>com.mycompany</groupId>
+							<artifactId>uhub-1-sapi</artifactId>
+						</sharedLibrary>
 					</sharedLibraries>
 				</configuration>
 			</plugin>
@@ -86,6 +90,11 @@
 			<artifactId>mule-xml-module</artifactId>
 			<version>1.4.2</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.mycompany</groupId>
+			<artifactId>uhub-1-sapi</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
