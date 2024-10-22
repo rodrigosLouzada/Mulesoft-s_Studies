@@ -109,11 +109,11 @@ output application/json
 				<ee:set-variable variableName="statusReason"><![CDATA["OK"]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6f19afd6-465d-4c84-a019-5cb7b45fbaf9" type="ANY">
-					<ee:transform doc:name="Service Unavailable Response" doc:id="60b854f6-cdea-4725-91db-1e9e637bb267" >
-						<ee:message >
-							<ee:set-payload ><![CDATA[%dw 2.0
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0d96020b-d481-474e-8f3e-d2fa80ced683" >
+					<ee:transform doc:name="Service Unavailable Response" doc:id="60b854f6-cdea-4725-91db-1e9e637bb267">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -124,11 +124,11 @@ output application/json
    "transactionId": vars.transactionId
 }]]></ee:set-payload>
 						</ee:message>
-						<ee:variables >
-							<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
+						<ee:variables>
+							<ee:set-variable variableName="statusCode"><![CDATA[500]]></ee:set-variable>
 						</ee:variables>
 					</ee:transform>
-				</on-error-propagate>
+				</on-error-continue>
 			</error-handler>
 		</try>
 		<logger level="INFO" doc:name="END LOG" doc:id="9251a3d7-cf49-4f63-b88d-e03d14aadcf0" message="COMPLETED REGISTER COVID CASE FLOW: #[payload]"/>
@@ -155,45 +155,45 @@ output application/json
 			</on-error-propagate>
 			
 			
-			<!-- [STUDIO:"On Error Propagate"]<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="DB:CONNECTIVITY">
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="DB:CONNECTIVITY">
 				<ee:transform doc:name="Service Unavailable Response" doc:id="e3e1c5d3-4601-466b-81f2-48a2725db9d3">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
-&#45;&#45;-
+---
 {
    "code":503,
    "message":"Service unavailable",
    "description": "The (upstream) service is temporarily not available",
    "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
    "transactionId": vars.transactionId
-}&#93;&#93;></ee:set-payload>
+}]]></ee:set-payload>
 					</ee:message>
 					<ee:variables>
-						<ee:set-variable variableName="statusCode"><![CDATA[503&#93;&#93;></ee:set-variable>
+						<ee:set-variable variableName="statusCode"><![CDATA[503]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</on-error-propagate> [STUDIO] -->
+			</on-error-propagate>
 			
-			<!-- [STUDIO:"On Error Propagate"]<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d1f76c82-8063-487f-a288-428aa9df1d3b" type="ANY">
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d1f76c82-8063-487f-a288-428aa9df1d3b" type="ANY">
 				<ee:transform doc:name="Service Unavailable Response" doc:id="b26fd43c-d257-4ea8-9ebf-ff6c323d64d3" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-&#45;&#45;-
+---
 {
    "code":500,
    "message":"Internal Server Error",
    "description": "The server encountered an unexpected condition which prevented it from fulfilling the request",
    "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
    "transactionId": vars.transactionId
-}&#93;&#93;></ee:set-payload>
+}]]></ee:set-payload>
 					</ee:message>
 					<ee:variables >
-						<ee:set-variable variableName="statusCode" ><![CDATA[500&#93;&#93;></ee:set-variable>
+						<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</on-error-propagate> [STUDIO] -->
+			</on-error-propagate>
 			
 		</error-handler>
 	</flow>
