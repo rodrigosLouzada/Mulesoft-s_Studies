@@ -203,7 +203,7 @@ var owner = "UHIS"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="6f6cda7e-8886-4236-a82b-93b4fd45b292" config-ref="Database_Config_UHUB_1">
+		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="6f6cda7e-8886-4236-a82b-93b4fd45b292" config-ref="Database_Config_Teste">
 			<db:sql><![CDATA[{call insert_covid_master(:source, 
                           :case_type, 
                           :first_name, 
