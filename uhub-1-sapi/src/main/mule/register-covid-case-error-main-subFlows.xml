@@ -255,8 +255,8 @@ output application/json
 		</try>
 		<logger level="INFO" doc:name="Logger" doc:id="43700d5b-6636-4bb6-b9d5-acd04ebc010f" />
 		<error-handler>
-			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e3d0550a-22a3-45e5-a6c7-23af7f6ce765" type="DB:BAD_SQL_SYNTAX">
-				<ee:transform doc:name="SubFlow-Error Response" doc:id="12b51e51-3f1f-4bff-98a8-c952b2dd770f" >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1a9e1350-a472-4b29-bf20-53fa6cec8717" type="ANY">
+				<ee:transform doc:name="SubFlow-Error Response" doc:id="b88f13c7-04ad-412e-b26f-a2b3132e5e9e" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -273,7 +273,7 @@ output application/json
 						<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</on-error-continue>
+			</on-error-propagate>
 		</error-handler>
 	</flow>
 </mule>
