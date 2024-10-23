@@ -8,14 +8,14 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
-	<http:listener-config name="HTTP_Listener_config_error_try" doc:name="HTTP Listener config" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" basePath="covid">
-		<http:listener-connection host="0.0.0.0" port="8099" />
+	<http:listener-config name="HTTP_Listener_config_error_try_main_sub" doc:name="HTTP Listener config" doc:id="64a1ba37-4287-451e-bfa4-76674f923b02" basePath="covid">
+		<http:listener-connection host="0.0.0.0" port="8091" />
 	</http:listener-config>
-	<db:config name="Database_Config_Teste" doc:name="Database Config" doc:id="8a131102-ffe3-4250-97d8-a32571041332" >
+	<db:config name="Database_Config_Teste_main_sub" doc:name="Database Config" doc:id="8a131102-ffe3-4250-97d8-a32571041332" >
 		<db:oracle-connection host="localhost" port="1522" user="system" password="@dinho32" instance="xe" />
 	</db:config>
-	<flow name="register-covid-validation-error-try-caseFlow" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
-		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_error_try" path="v1/cases-validation-error-main-sub" allowedMethods="POST">
+	<flow name="register-covid-case-error-main-subFlows" doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650" >
+		<http:listener doc:name="Listener" doc:id="58b7360d-4e71-4628-b18d-9c6f0e63c350" config-ref="HTTP_Listener_config_error_try" path="v1/cases-validation-error" allowedMethods="POST">
 			<http:error-response>
 				<http:body ><![CDATA[#[payload]]]></http:body>
 			</http:error-response>
@@ -37,65 +37,8 @@ payload]]></ee:set-variable>
 		<json:validate-schema doc:name="Validate Covid Json Payload Schema" doc:id="288a0cf5-da76-4e46-af63-5e8ca59451cb" schema="schema/covid-case-json-schema.json">
 		</json:validate-schema>
 		<!-- [STUDIO:"covid-case-validations-sub-flow"]<flow-ref doc:name="covid-case-validations-sub-flow" doc:id="c371a4e2-870b-4ebb-a637-5dba0203ba85" name="covid-case-validations-sub-flow" /> [STUDIO] -->
-		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="a191d2ab-6f0e-4202-9c81-dda36dd7fcef" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="covidPayload" ><![CDATA[%dw 2.0
-output application/java
-var actionDate = now() as String {format: "yyyy-MM-dd"}
-var owner = "UHIS"
----
-{
-	national_id: payload.nationalID,
-	street_address: payload.address.streetAddress,
-	country: payload.address.country,
-	city: payload.address.city,
-	date_of_birth: payload.dateOfBirth,
-	case_type: payload.caseType,
-	last_name: payload.lastName,
-	source: payload.source,
-	national_id_type: payload.nationalIDType,
-	update_date: actionDate,
-	create_by: owner,
-	phone: payload.phone,
-	state: payload.address.state,
-	postal: payload.address.postal,
-	create_date: actionDate,
-	update_by: owner,
-	first_name: payload.firstName,
-	email: payload.email
-}]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<try doc:name="Try" doc:id="d879a700-416c-40a1-994b-7e9b16e718bd" >
-			<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_1">
-			<db:sql><![CDATA[{call insert_covid_master(:source, 
-                          :case_type, 
-                          :first_name, 
-                          :last_name, 
-                          :phone, 
-                          :email, 
-                          :date_of_birth, 
-                          :national_id, 
-                          :national_id_type, 
-                          :street_address, 
-                          :city, 
-                          :state, 
-                          :postal, 
-                          :country, 
-                          :create_date, 
-                          :update_date, 
-                          :create_by, 
-                          :update_by, 
-                          :case_id)}
-]]></db:sql>
-			<db:input-parameters><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
-			<db:output-parameters>
-				<db:output-parameter key="case_id" type="INTEGER" />
-			</db:output-parameters>
-		</db:stored-procedure>
-			<ee:transform doc:name="Prepare Response" doc:id="6508afc7-c2f5-45b1-8cbf-9ddca1773de1">
+		<flow-ref doc:name="insert-covid-case-sub-flow" doc:id="9f27bbca-2f19-4a5d-bae0-89a959f4f8c9" name="insert-covid-case-sub-flow"/>
+		<ee:transform doc:name="Prepare Response" doc:id="6508afc7-c2f5-45b1-8cbf-9ddca1773de1">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -109,28 +52,6 @@ output application/json
 				<ee:set-variable variableName="statusReason"><![CDATA["OK"]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-			<error-handler>
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0d96020b-d481-474e-8f3e-d2fa80ced683" >
-					<ee:transform doc:name="Service Unavailable Response" doc:id="60b854f6-cdea-4725-91db-1e9e637bb267">
-						<ee:message>
-							<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-   "code":500,
-   "message":"dataBase error",
-   "description": "The server encountered an unexpected condition which prevented it from fulfilling the request",
-   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
-   "transactionId": vars.transactionId
-}]]></ee:set-payload>
-						</ee:message>
-						<ee:variables>
-							<ee:set-variable variableName="statusCode"><![CDATA[500]]></ee:set-variable>
-						</ee:variables>
-					</ee:transform>
-				</on-error-continue>
-			</error-handler>
-		</try>
 		<logger level="INFO" doc:name="END LOG" doc:id="9251a3d7-cf49-4f63-b88d-e03d14aadcf0" message="COMPLETED REGISTER COVID CASE FLOW: #[payload]"/>
 		<error-handler>
 			
@@ -197,7 +118,7 @@ output application/json
 			
 		</error-handler>
 	</flow>
-	<flow name="register-covid-validation-error-try-caseFlow-sub" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
+	<flow name="register-covid-case-error-main-subFlows-sub" doc:id="6a912cb7-bb39-4a96-b26f-dcdd3ef02cc6" >
 		<logger level="INFO" doc:name="Logger" doc:id="a1af8b5e-83b1-4857-8d6c-c31dcb8a3362" />
 		<db:select doc:name="Select CASE_ID" doc:id="d4344268-768a-4637-9a49-5c0b4a0a5689" config-ref="Database_Config_UHUB_1">
 			<db:sql><![CDATA[select max(case_id) as case_id from cvd_case_master where national_id = :nationalID
@@ -249,5 +170,65 @@ values
 			<db:auto-generated-keys-column-names>
 			</db:auto-generated-keys-column-names>
 		</db:insert>
+	</flow>
+	<flow name="insert-covid-case-sub-flow" doc:id="8b046893-98d7-437a-91cf-78ee7bd6dc2f" >
+		<logger level="INFO" doc:name="Logger" doc:id="c09a8ed3-8e5d-44f1-84d0-4c4bce48f4db" />
+		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="7d1a4411-d497-4cfe-be7c-d480bee22895">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="covidPayload"><![CDATA[%dw 2.0
+output application/java
+var actionDate = now() as String {format: "yyyy-MM-dd"}
+var owner = "UHIS"
+---
+{
+	national_id: payload.nationalID,
+	street_address: payload.address.streetAddress,
+	country: payload.address.country,
+	city: payload.address.city,
+	date_of_birth: payload.dateOfBirth,
+	case_type: payload.caseType,
+	last_name: payload.lastName,
+	source: payload.source,
+	national_id_type: payload.nationalIDType,
+	update_date: actionDate,
+	create_by: owner,
+	phone: payload.phone,
+	state: payload.address.state,
+	postal: payload.address.postal,
+	create_date: actionDate,
+	update_by: owner,
+	first_name: payload.firstName,
+	email: payload.email
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="6f6cda7e-8886-4236-a82b-93b4fd45b292" config-ref="Database_Config_UHUB_1">
+			<db:sql><![CDATA[{call insert_covid_master(:source, 
+                          :case_type, 
+                          :first_name, 
+                          :last_name, 
+                          :phone, 
+                          :email, 
+                          :date_of_birth, 
+                          :national_id, 
+                          :national_id_type, 
+                          :street_address, 
+                          :city, 
+                          :state, 
+                          :postal, 
+                          :country, 
+                          :create_date, 
+                          :update_date, 
+                          :create_by, 
+                          :update_by, 
+                          :case_id)}
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
+			<db:output-parameters>
+				<db:output-parameter key="case_id" type="INTEGER" />
+			</db:output-parameters>
+		</db:stored-procedure>
+		<logger level="INFO" doc:name="Logger" doc:id="43700d5b-6636-4bb6-b9d5-acd04ebc010f" />
 	</flow>
 </mule>
