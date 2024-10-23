@@ -10,20 +10,8 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config"
-		doc:name="HTTP Listener config"
-		doc:id="1950f41c-65e1-44b4-94e0-8de3785e0e0a" basePath="covid">
-		<http:listener-connection host="0.0.0.0"
-			port="8098" />
-	</http:listener-config>
-	<db:config name="Database_Config_UHUB_1"
-		doc:name="Database Config"
-		doc:id="9f9def76-3165-494d-af03-fd5123b66955">
-		<db:oracle-connection host="localhost"
-			user="system" password="@dinho32" instance="XE">
-			<db:pooling-profile />
-		</db:oracle-connection>
-	</db:config>
+	
+	
 	<flow name="register-covid-caseFlow"
 		doc:id="0cab6d39-f523-4fbf-a28e-96a2614a0650">
 		<http:listener doc:name="Listener"

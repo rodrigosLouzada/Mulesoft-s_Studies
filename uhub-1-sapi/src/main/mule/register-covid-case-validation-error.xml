@@ -66,7 +66,6 @@ var owner = "UHIS"
 			</ee:variables>
 		</ee:transform>
 		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="9f9def76-3165-494d-af03-fd5123b66955" config-ref="Database_Config_UHUB_1">
-			<error-mapping sourceType="DB:CONNECTIVITY" targetType="CUSTOM:CONNECTION_FAILED" />
 			<db:sql><![CDATA[{call insert_covid_master(:source, 
                           :case_type, 
                           :first_name, 
@@ -128,47 +127,6 @@ output application/json
 					</ee:message>
 					<ee:variables>
 						<ee:set-variable variableName="statusCode"><![CDATA[400]]></ee:set-variable>
-					</ee:variables>
-				</ee:transform>
-			</on-error-propagate>
-			
-			
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4199f07c-8aa8-43b5-b58a-a6f54fcf6779" type="CUSTOM:CONNECTION_FAILED">
-				<ee:transform doc:name="Service Unavailable Response" doc:id="e3e1c5d3-4601-466b-81f2-48a2725db9d3">
-					<ee:message>
-						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-   "code":503,
-   "message":"Service unavailable",
-   "description": "The (upstream) service is temporarily not available",
-   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
-   "transactionId": vars.transactionId
-}]]></ee:set-payload>
-					</ee:message>
-					<ee:variables>
-						<ee:set-variable variableName="statusCode"><![CDATA[503]]></ee:set-variable>
-					</ee:variables>
-				</ee:transform>
-			</on-error-propagate>
-			
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d1f76c82-8063-487f-a288-428aa9df1d3b" type="ANY">
-				<ee:transform doc:name="Service Unavailable Response" doc:id="b26fd43c-d257-4ea8-9ebf-ff6c323d64d3" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-   "code":500,
-   "message":"Internal Server Error",
-   "description": "The server encountered an unexpected condition which prevented it from fulfilling the request",
-   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
-   "transactionId": vars.transactionId
-}]]></ee:set-payload>
-					</ee:message>
-					<ee:variables >
-						<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
