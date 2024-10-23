@@ -173,7 +173,8 @@ values
 	</flow>
 	<flow name="insert-covid-case-sub-flow" doc:id="8b046893-98d7-437a-91cf-78ee7bd6dc2f" >
 		<logger level="INFO" doc:name="Logger" doc:id="c09a8ed3-8e5d-44f1-84d0-4c4bce48f4db" />
-		<ee:transform doc:name="Prepare Covid Case Payload" doc:id="7d1a4411-d497-4cfe-be7c-d480bee22895">
+		<try doc:name="Try" doc:id="c803f6b3-0a17-4a7d-8b15-c7b5200fa62b" >
+			<ee:transform doc:name="Prepare Covid Case Payload" doc:id="7d1a4411-d497-4cfe-be7c-d480bee22895">
 			<ee:message />
 			<ee:variables>
 				<ee:set-variable variableName="covidPayload"><![CDATA[%dw 2.0
@@ -203,7 +204,7 @@ var owner = "UHIS"
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="6f6cda7e-8886-4236-a82b-93b4fd45b292" config-ref="Database_Config_Teste">
+			<db:stored-procedure doc:name="Insert Covid Case Stored procedure" doc:id="6f6cda7e-8886-4236-a82b-93b4fd45b292" config-ref="Database_Config_Teste">
 			<db:sql><![CDATA[{call insert_covid_master(:source, 
                           :case_type, 
                           :first_name, 
@@ -229,10 +230,33 @@ var owner = "UHIS"
 				<db:output-parameter key="case_id" type="INTEGER" />
 			</db:output-parameters>
 		</db:stored-procedure>
+			<set-payload value='#["i am subflow Payload"]' doc:name="subFlow Payload" doc:id="6e5a1e09-b87f-49d3-92e3-46e856ba39e5" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4be3d67a-c2fd-451c-9939-7c7114154542" type="ANY">
+					<ee:transform doc:name="SubFlow-try-Error Response" doc:id="01e6ce1a-9264-43ba-b13a-96eeb047294f" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "code":500,
+   "message":"Internal Server Error",
+   "description": "Sub-flow error handler",
+   "dateTime": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+   "transactionId": vars.transactionId
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
 		<logger level="INFO" doc:name="Logger" doc:id="43700d5b-6636-4bb6-b9d5-acd04ebc010f" />
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1b49d151-5d2d-4b32-858c-f272e26f29dc" type="ANY">
-				<ee:transform doc:name="SubFlow-Error Response" doc:id="d9fc7cce-8c62-49c2-9bad-7b05e7880728" >
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e3d0550a-22a3-45e5-a6c7-23af7f6ce765" type="DB:BAD_SQL_SYNTAX">
+				<ee:transform doc:name="SubFlow-Error Response" doc:id="12b51e51-3f1f-4bff-98a8-c952b2dd770f" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -249,7 +273,7 @@ output application/json
 						<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</on-error-propagate>
+			</on-error-continue>
 		</error-handler>
 	</flow>
 </mule>
